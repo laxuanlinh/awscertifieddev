@@ -34,3 +34,10 @@
 - Can replicate detele markers optionally but cannot delete with a version ID
 - If bucket 1 is replicated into bucket 2, bucket 2 is replicated into bucket 3 then objects created in bucket 1 is not replicated into bucket 3
 
+### To create a replica for a bucket in S3:
+- Create 2 buckets, origin and replica, enable `Bucket Versioning`
+- In the origin bucket, go to Management to create new replication rule
+- Specify the destination bucket, cross account can be enabled
+- For IAM role, can either select an existing role or select Create new role and leave it to AWS
+- Delete marker replication if selected will replicate the marker every time an object is deleted in the origin bucket
+- Upon creating a new replication rule, AWS will ask whether to replicate the existing objects with Batch operation
