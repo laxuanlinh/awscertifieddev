@@ -77,3 +77,85 @@
 - After the service is deployed, use the DNS of the ALB to access
 - To scale the Service/Task, go to Edit and change the Desired Tasks, if it's 0 then there is no task running
 
+### ECS Service Auto Scaling
+- Auto increase/decrease number of ECS tasks
+- `ECS Auto Scaling` uses `AWS Application Auto Scaling` which scale CPI, RAM, ALB
+- `Target Tracking`: scale based on target value for a specific `CloudWatch` metric
+- `Step Scaling`: based on `CloudWatch` Alarm
+- `Scheduled Scaling`: specified date/time
+- ECS Service Auto Scaling at task level does not equal EC2 Auto Scaling at instance level
+- This is why Fargate is better at scaling because we don't have to manage the instances
+
+### EC2 Launch Type - Auto Scaling EC2 Instances
+- Adds underlying EC2 instances
+- `Auto Scaling Group Scaling`:
+  - Scale ASG based on CPU utilization, provided by `CloudWatch`
+  - Add EC2 instance over time
+- `ECS Cluster Capacity Provider`(recommended):
+  - Auto provision and scale the infra for ECS tasks
+  - Capacity Provider paired with an Auto Scaling Group
+  - Add new instances when missing capacity
+
+### ECS Rolling Updates
+- When updating from v1 to v2, we can control how many tasks can be started and stopped, in which order
+- For example, when the Min = 50% to be considered Healthy, Max is 100% and we have 4 tasks running:
+  1. 2 tasks will be removed => 50%
+  2. 2 new tasks of v2 are added => 100%
+  3. The last 2 v1 tasks are removed => 50%
+  4. 2 new tasks of v2 are added and the rolling update is complete
+
+- If Min = 100% (we want all tasks are up 100% all the time) and Max = 150% then:
+  1. 2 tasks v2 are added => 150%
+  2. 2 tasks v1 are removed => 100%
+  3. 2 tasks v2 are added => 150%
+  4. The last 2 v1 tasks are removed, the  rolling update is complete
+
+### Solution architecture
+1. We may have an ECS cluster with Fargate running. 
+    - User sends an object to S3, S3 is integrated with `EventBridge`. 
+    - `EventBridge` has a rule to create a task in ECS cluster to get the object from S3, process it and send to DynamoDB
+2. We can have the `EventBridge` to periodically sends an event to create a new task in ECS cluster to do batch processing, then send the result to S3
+3. We can have an `SQS Queue` receiving messages from other services
+    - The tasks in cluster pull messages from `SQS` and process them
+    - We can have an `ECS Service Auto Scaling` to scale up and down the number of tasks if there are too many messages to process
+    - The `Service Auto Scaling` may scale based on CPU utilitzation
+
+### Task Definitions
+- `Task Definitions` are metadata in JSON to tell ECS how to run Docker containers
+- It contains some info such as:
+  - Image name
+  - Port binding for containers and Host
+  - RAM and CPU 
+  - Environment variables
+  - Networking info
+  - IAM Role
+  - Logging config (`CloudWatch`)
+- We can define up to 10 containers
+
+#### Load Balancing EC2 Launch Type
+- If we don't specify the ports then we get `Dymanic Host Port Mapping`, which means each task in the EC2 instance will have a random port
+- When `ALB` connects to the instances, it will automatically find the ports
+- Because the ports are random, we need to config the **security group of the instance** to accept traffic from the **ALB's security group** on **all the ports**
+
+#### Load Balancing Fargate Launch Type
+- Because Fargate is serverless so we don't have any host
+- Each task has a unique private IP and connect to an ECS ENI
+- These ENIs all run on port 80
+- When ALB connects to the cluster, it just needs to connect to port 80 of the ENIs
+- The ECS ENI's sec group needs to allow ALB's sec group on port 80
+- ALB's sec group needs to allow traffic from the Internet on port 80/443 (if HTTPS)
+
+#### IAM Role
+- Each Role is attached to a task definition, not the whole service
+
+#### Environment Variables
+- When defining tasks, we can define Environment variables such as hardcoded URLs
+- If there is sensitive info then we need to store it in param store and only load it on start up.
+
+#### Data Volumes(Bind Mounts)
+- We can attach `Bind Mounts` volume to 1 or many tasks so they can share the data
+- `Bind Mounts` are diffrent from `EFS`, mostly because of their lifecycles.
+- When attached to Fargate, `Bind Mounts` is removed and all data is lost when the containers they're attached to all stop
+- When attached to EC2, `Bind Mounts` are essentially the EC2 instance's storage, their lifecycles is tied to the EC2 instance's lifecycle
+- `Bind Mount` can range from 20-200GB.
+- `EFS` can also be attached to tasks at `Task Definition` step
