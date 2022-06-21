@@ -5,7 +5,7 @@
 - Fargate is a serverless container platform that works with both EKS and ECS
 
 ## ECS
-- When launching ECS, we're launching ECS tasks on RCS Clusters
+- When launching ECS, we're launching ECS tasks on ECS Clusters
 ### EC2 Launch Type
 - For EC2 launch type, need to provision and maintain the infra
 - Each EC2 instance will have a ECS Agent to launch ECS tasks and register with the cluster
@@ -37,7 +37,7 @@
 ### Data Volume (EFS)
 - EFS works for both EC2 and Fargate
 - Tasks running in different AZ will share the same data
-- Farget + EFS = Serverless\
+- Farget + EFS = Serverless
 - S3 cannot be mounted as a file system
 
 ### Create ECS Cluster
@@ -79,7 +79,7 @@
 
 ### ECS Service Auto Scaling
 - Auto increase/decrease number of ECS tasks
-- `ECS Auto Scaling` uses `AWS Application Auto Scaling` which scale CPI, RAM, ALB
+- `ECS Auto Scaling` uses `AWS Application Auto Scaling` which scale CPU, RAM, ALB
 - `Target Tracking`: scale based on target value for a specific `CloudWatch` metric
 - `Step Scaling`: based on `CloudWatch` Alarm
 - `Scheduled Scaling`: specified date/time
@@ -131,11 +131,13 @@
   - IAM Role
   - Logging config (`CloudWatch`)
 - We can define up to 10 containers
+- When create a Task Definition, an Essential container is the container that when it stops, all containers stop
 
 #### Load Balancing EC2 Launch Type
 - If we don't specify the ports then we get `Dymanic Host Port Mapping`, which means each task in the EC2 instance will have a random port
 - When `ALB` connects to the instances, it will automatically find the ports
-- Because the ports are random, we need to config the **security group of the instance** to accept traffic from the **ALB's security group** on **all the ports**
+- Because the ports are random, we need to config the **security group of the instance** to accept traffic from the **ALB's security group** on **all the ports**.
+- If we define mapping from container's ports to host's ports then make sure the host's ports don't overlap
 
 #### Load Balancing Fargate Launch Type
 - Because Fargate is serverless so we don't have any host
@@ -159,3 +161,88 @@
 - When attached to EC2, `Bind Mounts` are essentially the EC2 instance's storage, their lifecycles is tied to the EC2 instance's lifecycle
 - `Bind Mount` can range from 20-200GB.
 - `EFS` can also be attached to tasks at `Task Definition` step
+
+### Task Placement
+- When launching EC2 type, ECS needs to decide where to place it with the constraint of CPU and RAM
+- When ECS scale up and down, it also needs to decide where to add/remove containers
+- To assist this, can define `task placement strategy` and `task placement constraint`
+- Task placement strategies are the best option
+- When ECS select an instance to place a container, it uses the following process:
+  - **Step 1**: Identify the instances that satisfy CPU, RAM and port requirements
+  - **Step 2**: Instances that satisfy task placement constraints
+  - **Step 3**: Instances that satisfy task placement strategies
+  - **Step 4**: Select the instance for task placement
+
+#### Task Placement Strategy
+- `Binpack`:
+  - Based on the least available amount of CPU or RAM
+  - Save money, it tries to place as many containers in an instance as possible before moving to another instance
+  ```
+  "placementStrategy": [
+    {
+      "field": "memory",
+      "type": "binpack"
+    }
+  ]
+  ```
+- `Random`: place randomly
+  ```
+  "placementStrategy": [
+    {
+      "type": "binpack"
+    }
+  ]
+  ```
+- `Spread`:
+  - Place tasks evenly based on specified value
+  - For example here it's spreading across AZs
+  ```
+  "placementStrategy": [
+    {
+      "field": "attribute:ecs.availability-zone",
+      "type": "spread"
+    }
+  ]
+  ```
+- Can mix together:
+  ```
+  "placementStrategy": [
+    {
+      "field": "memory",
+      "type": "binpack"
+    },
+    {
+      "field": "attribute:ecs.availability-zone",
+      "type": "spread"
+    }
+  ]
+  ```
+#### Task Placement Constraints
+- `distinctInstance`: place each task on different container instance
+- `memberOf`: place tasks on instances that satisfy an expression, uses Cluster Query Language which is advanced
+
+## Amazon ECR
+- Container Registry
+- Stores and manages Docker images on AWS
+- Can be private and public
+- Fully integrated with ECS, backed by S3
+- For example ECS can pull images, protected by IAM Roles
+- To access ECR, we can use AWS CLI to login and enter Docker CLI
+  ```
+  aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws_account_id>.dkr.ecr.region.amazonaws.com
+  ```
+- Then we can perform some Docker commands
+  ```
+  docker push <aws_account_id>.dkr.ecr.region.amazonaws.com/demo:latest
+  ```
+  ```
+  docker pull <aws_account_id>.dkr.ecr.region.amazonaws.com/demo:latest
+  ```
+- In case of EC2 instance, if you can't pull or push, check IAM permissions
+
+## Amazon EKS
+- Elastic Kubernetes Service
+- EKS Worker Nodes work across mutiple AZs
+- In each AZ there is an EKS Node
+- In each node there are EKS Pods, each pod is a bunch of containers, similar to ECS tasks/service
+- 
