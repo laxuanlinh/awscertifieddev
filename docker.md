@@ -245,4 +245,3 @@
 - EKS Worker Nodes work across mutiple AZs
 - In each AZ there is an EKS Node
 - In each node there are EKS Pods, each pod is a bunch of containers, similar to ECS tasks/service
-- 
