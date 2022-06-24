@@ -108,3 +108,80 @@
   - Directly to an ASG
   - Mix of ASG/tags so you can build deployment segments
   - Customization in scripts with `DEPLOYMENT_GROUP_NAME` environment variables
+
+### Create Deployment
+#### Step 1: Create roles for CodeDeploy and EC2 instances
+- To create deployment in CodeDeploy, we first need to create 2 IAM service roles
+  - CodeDeploy role: We need a role for CodeDeploy to access other services during deployment. Select CodeDeploy => select the default policy and create new role
+  - EC2 role: Since EC2 needs permission to pull artifacts from S3, we need to create a role for it with policy `AmazonS3ReadOnlyAccess`
+#### Step 2: Create EC2 instances
+- We need to create an EC2 instance so we can deploy to, go to EC2 and create new instance with the created IAM service role, enable traffic on port 80.
+- Connect to the instance and install CodeDeploy Agent
+
+#### Step 3: Create S3 bucket and upload code
+- Go to S3 to create a bucket
+- Upload the project zip file to the bucket, inside the source folder there should be an `appspec.yml` file to guide how to run the project
+
+
+#### Step 4: Create CodeDeploy Application
+- Go to CodeDeploy => Create new application => EC2/On-premises
+
+#### Step 5: Create Deployment group
+- Each Deployment group is a set of EC2 instances that we deploy to, which means we can have some groups to deploy to such as `Dev`, `Prod`...
+- Go to EC2 instance and add a tag `Environment` = `Dev`
+- Go to `Create deployment group`, specify the name
+- Service role is the role of CodeDeploy that we created earlier
+- For `Environment configuration`, select `Amazon EC2 instances` (because we're deploying to an EC2 instance), the key and value are the tag that we added to the instance so that only instances of this tag are included in the `Deployment group`
+- For `Deployment settings`, select the Deployment config (all at once, on at a time ...) then `Create deployment group`
+
+#### Step 6: Create Deployment
+- Back to the `CodeDeploy`'s deployment group, `Create deployment`
+- The Deployment group is the one we created for dev environment before 
+- The Revision location is the URI to the uploaded file in bucket
+- `Create deployment`
+
+
+![](codedeploy.png)
+
+## CodeDeploy with EC2
+- We can use appspec.yml + deployment strategy to define how to deploy to EC2
+- Will do in-place update to the fleet of EC2 instances
+- Can use hooks to verify the deployment after each deployment phase
+  
+### CodeDeploy with ASG
+#### In-place deployment
+- Update existing EC2 instances
+- Newly created instance will get automated deployments
+
+#### Blue/Green
+- Must use ALB
+- A new ASG is created, both old and new ASG connect to ALB
+- When health check is ok, ALB will automatically switch to the new version
+- Can select how long to keep the old ASG
+
+#### Redeploy and Rollbacks
+- `Rollback` = redeploy a previous deployed version 
+- We can set `Deployments` to be rolled back manually or automatically when CloudWatch alarm
+- We can disable `Rollbacks`
+- When `Rollbacks` happen, `CodeDeploy` will deploy a last known working version as a new version, instead of falling back.
+
+## AWS CodeStar
+- An integrated solution that groups GitHub, CodeCommit, CodeBuild, CodeDeploy, CloudFormation, CodePipeline, CloudWatch together
+- Quickly create CICD-ready projects for EC2, Beanstalk, Lambda
+- Supports multi languages
+- One dashboard to view all components
+- Issue tracking tools like Jira, GitHub
+- Free, only charges for underlying services, limited customization
+
+## AWS CodeArtifact
+- Dependencies management which is scalable, cost-effective and secure
+- Works with common dependency management tools like Maven, Gradle, npm, yarn, twine, pip and NuGet
+- Developers and CodeBuild can then retrieve dependencies straigt from CodeArtifact
+- It's basically Maven on cloud
+
+## AWS CodeGuru
+- Machine learning code review
+- CodeGuru Reviewer: Automated code reviews for static code analysis
+- CodeGuru Profiler: Gives recommendations to improve performance
+- CodeGuru looks into commits
+- Support Java and Python
