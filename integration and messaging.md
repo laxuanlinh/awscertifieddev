@@ -63,4 +63,42 @@
 - We can set a threshold to how many times this can happen and send it to `Dead Letter Queue` for debugging later
 - It's good to set the retention of DLQ to 14 days to have time to debug
 - After fixing the code, consumer can now reprocess the messages in `DLQ`, we can redrive the messages from `DLQ` back to the main queue
-- 
+
+### Delay Queue
+- Delay a message, consumer won't see it right away, up to 15 mins
+- Default is 0
+- Can set default at queue level
+- Can override the default on send using `DelaySeconds` param
+
+### Long Polling
+- When consumers make too many requests to queue but there is no message, it can wait.
+- This is called `LongPoling`
+- `LongPolling` decrease number of API calls to SQS while increasing efficiency and latency 
+- The wait time is 1 -> 20 seconds, 20 is preferable
+- `Long Poling` is preferable to `Short Polling`
+- `LongPolling` can be enabled at queue level
+
+### Extended Client
+- We can use `SQS Extended Client` (Java Library) to extend size of messages
+- It uses S3 to store the messages and send metadata to the queue to reference to the bucket
+- The client will also use `SQS Extended Client` to read the metadata and download message from S3
+
+### Must know API
+- `CreateQueue`, `DeleteQueue`
+- `PurgeQueue`: delete all messages in queue
+- `SendMessage`, `ReceiveMessage`, `DeleteMessage`
+- `MaxNumberOfMessages`: default 1, max 10
+- `ReceiveMessageWaitTimeSeconds`: Long Polling
+- `ChangeMessageVisibility`: change message timeout 
+
+### SQS FIFO
+- First In First Out (ordering in queue)
+- **Limited throughput** because of ordering
+- FIFO has a feature `Deduplication`, if enabled, it prevent duplication in an interval of 5 minutes
+- `Deduplication` can base on:
+  - Hashing of content
+  - We can explicitly provide a `Message Deduplication ID` so that the following messages with this ID can be ignored
+- `Message Grouping` is when you specify the value of `MessageGroupID` in an FIFO queue.
+- Messages that have the same `MessageGroupID` can only be processed by 1 consumer
+- Ordering across groups is *not guaranteed*
+- The idea is to distribute groups to different consumers to achieve *parallel processing*
