@@ -102,6 +102,7 @@
 - Messages that have the same `MessageGroupID` can only be processed by 1 consumer
 - Ordering across groups is *not guaranteed*
 - The idea is to distribute groups to different consumers to achieve *parallel processing*
+- Can have as many consumers as `MessageGroupID`
 
 ## Amazon SNS
 - Pub/Sub
@@ -235,11 +236,12 @@
 - Records are read in order at the shard level
 
 #### Shard Splitting
-- Used to increae stream capacity since 1MB/s/shard
+- Used to increase stream capacity since 1MB/s/shard
 - Used to devide a hot shard
 - The old shard is closed and will be deleted once the data expires
 - No automatic scaling
 - Can't split into more than 2 shards in a single operation
+- Shard Splitting splits a shard into 2 if it's too hot while Auto Scaling increase number of shards which does not solve the hot shard issue
 
 #### Merging Shards
 - Can group 2 shards having low traffic into 1 new shard
@@ -248,4 +250,36 @@
 - Old shards are closed and deleted once data expires
 
 ## Kinesis Data Firehose
+- Take data from producers including `Kinesis Data Stream`
+- It can optionally transform data using `Lambda`
+- Batch writes to destination without additional code
+- Destinations:
+  - S3
+  - AWS Redshift (copy from S3 first then Firehose issues a copy command)
+  - AWS ElasticSearch
+  - Custom destinations
+  - Some partners 
+- Can store back up in S3
+- No administration, auto scaling, serverless
+- Pay for data going through Firehose
+- Near Real Time because we need to write in batch so there is 60 secs latency or min 32MB of data at a time
   
+### Firehose vs Data Stream
+- `Data Stream` is a streaming service that ingests data at scale, need to write code, at real time, manage scaling, data storage from 1->365 days, supports replay
+- `Firehose` is a streaming service that ingests data and streams into other AWS services, fully managed, no need to manage scaling, near real time, cannot store or replay data
+
+### Create Data Firehose
+- Create a data stream (in Kinesis Data Stream)
+- Go to `Kinesis` => `Delivery Stream` => `Create delivery stream`
+- Select `Source` and `Destination`
+- Select data stream
+- Can select Lambda to transfer optionally
+- Select S3 buffer size/interval to config when the data is delivered
+- Let AWS create new IAM role or select an existing one
+- Create delivery stream
+
+## Kinesis Data Analytics
+- Source from Data Stream or Firehose
+- Use SQL to analyze data
+- Perform real time analytics, charge over data 
+- Auto scaling
