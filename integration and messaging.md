@@ -102,3 +102,148 @@
 - Messages that have the same `MessageGroupID` can only be processed by 1 consumer
 - Ordering across groups is *not guaranteed*
 - The idea is to distribute groups to different consumers to achieve *parallel processing*
+
+## Amazon SNS
+- Pub/Sub
+- The producer only sends message to 1 topic
+- As many event receivers as we want
+- Up to 12,500,000 subscriptions per topic
+- 100,000 topics limit
+- `SNS` can send email, sms, http, to `SQS`, Lambda
+- Many AWS services can send messages directly to `SNS`
+- Same security as `SQS`, in flight HTTPS default, `SNS Access Policies` similar to `SQS` and `S3`
+
+### SNS + SQS: Fan Out
+- Push once in `SNS`, receive in all `SQS` queues that are subscribers
+- `SNS` => `SQS` => consumers
+- Fully decoupled, no data loss
+- `SQS` allows for data persistence, delayed processing and retries of work
+- Ability to add more `SQS` consumers over time
+- Make sure `SQS` queue access policy allows SNS to write
+- We can do this not only to `SQS` but also to `Kinesis`, `Lambda` functions and so on
+
+### Message Filtering
+- JSON policy used to filter messages sent to SNS topic's subscriptions
+- If a subscription doesn't have a filter policy, it receives every message
+
+![](snssqsfanout.png)
+
+### Create SNS Topic
+- Go to `SNS` => `Create Topic`
+- This is similar to `SQS`, the topic could be `Standard` or `FIFO` (ends with .fifo)
+- Specify `Access Policy` for other accounts or services => `Create topic`
+- To subscribe, we need to create subscription
+- Go to the topic => `Create subscription`
+- The protocol could be:
+  - `Kinesis`
+  - `SQS`
+  - `Lambda`
+  - `Email`
+  - `Email-JSON`
+  - `HTTP`
+  - `HTTPS`
+  - `Platform application endpoints`
+  - `SMS`
+- Specify the endpoint of the protocol (email address, ARN or URL...)
+- It's optional to select filtering policy and redrive policy for dead letter queue
+
+## Kinesis (**NEED TO KNOW IN DEPTH**)
+- Make it easy to collect, process and analyze streaming data in real-time
+- Ingest real-time data such as Application logs, Metrics, Website clickstream
+- `Kinesis Data Stream`: capture, process and store data streams
+- `Kinesis Data Firehose`: load data streams into AWS data stores
+- `Kinesis Data Analytics`: analyze data stream with SQL or Apache Flink
+- `Kinesis Video Streams`: capture, process and store video streams
+
+### Kinesis Data Stream
+- Stream big data in systems
+- Contains of Shards from Shard 1 -> N, the stream is split across all the shards
+- When a producer (apps using SDK) sends data to Kinesis
+- The data record has a `partition key` and a `data blob`
+- The `key` decides what shard it goes to
+- It can sends 1MB/sec or 1000 msg/sec per shard
+- The consumers could be apps with `SDK`, `Lambda`, `Firehose`, `Data Analytics`
+- Retention 1 -> 365 days
+- Ability to reprocess(replay) data
+- Once data is inserted in Kinesis, it can't be deleted (immutability)
+- Data that shares the same partition goes to the same shard (ordering)
+- Producers could be `AWS SDK`, `Kinesis Producer Library(KPL)`, `Kinesis Agent`
+- Consumbers could be apps with `Kinesis Client Library(KCL)`, `AWS SDK`, `Lambda`, `Firehose`, `Data Analytics`
+
+![](kinesisdatastream.png)
+#### Capacity Modes
+- **Provision Mode:**
+  - Choose number of shards, scale manually or using API
+  - Each shard gets 1MB/s in (1000 records per sec)
+  - Each shard gets 2MB/s out (classic or enhanced fan-out consumer)
+  - Pay per shard provisioned per hour
+- **On-demand mode**
+  - No need to provision or manage the capacity
+  - Default capacity 4MB/s or 4000 records/s
+  - Scale automatically based on observed throughput
+  - Pay per stream per hour & data in/out per GB
+
+#### Security
+- Control access/authorization using `IAM policies`
+- Encryption in flight using HTTPS and at rest using `KMS`
+- Can implement en/decryption on client side (harder)
+- Other services within VPC can call Kinesis Data Streams without going through the internet
+- `CloudTrail` can monitor
+
+#### Kinesis Producer
+- Put data records into data streams
+- Data record consists of:
+  - `Sequence number` (unique per partition key within shard)
+  - `Paritition key` (must specify while put records into stream)
+  - `Data blob` (up to 1 MB)
+- Write throughput 1MB/sec or 1000 records/sec per shard
+- `PutRecord` API
+- Use batching with `PutRecords` API to reduce costs and increase throughput 
+- The parition key is **hashed** to decide which shard to go to
+- If we have `ProvisionedThroughputExceeded`, use highly distributed partition key, retries with exponential backoff and scale up shards 
+
+#### Kinesis Consumer
+- Get data from data stream then process
+- `Shared (Classic) Fan-out Consumer:`
+  - 2MB/sec/shard across all consumers
+  - All consumers can share 2MB/sec
+  - 5 get record API calls/sec/shard
+  - Minimize cost
+  - Latency 200ms
+  - Poll data using `GetRecords` API
+- `Enhanced Fan-out Consumer:`
+  - 2MB/sec/shard/consumer
+  - Consumers won't share throughput
+  - Latency 70ms
+  - High cost
+  - Push data using HTTP/2 `SubscribeToShard` API
+- Lambda can support both Classic and Enhanced 
+- Lambda reads records in batches using GetBatch(), can configure batch size, window
+- Lambda can retry on failure
+
+#### Create Kinesis Data Stream
+- Go to Kinesis => Create Kinesis data stream
+- Select On-demnand or Provisioned (On-demand does not require provision the number of shards)
+
+#### Kinesis Client Library (KCL)
+- A Java lib that helps read records from KDS
+- Each shard can only be read by 1 KCL instance max
+  - 4 shards = max 4 KCL instances
+- Process is checkpointed into DynamoDB (needs IAM access)
+- It's able to track other workers and share the work amongst shared thanks to MongoDB
+- Can run on EC2, Beanstalk, on premises
+- Records are read in order at the shard level
+
+#### Shard Splitting
+- Used to increae stream capacity since 1MB/s/shard
+- Used to devide a hot shard
+- The old shard is closed and will be deleted once the data expires
+- No automatic scaling
+- Can't split into more than 2 shards in a single operation
+
+#### Merging Shards
+- Can group 2 shards having low traffic into 1 new shard
+- Save cost
+- Can't merge more than 2 shards/operation
+- Old shards are closed and deleted once data expires
+  
