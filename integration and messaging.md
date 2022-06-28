@@ -246,4 +246,6 @@
 - Save cost
 - Can't merge more than 2 shards/operation
 - Old shards are closed and deleted once data expires
+
+## Kinesis Data Firehose
   
