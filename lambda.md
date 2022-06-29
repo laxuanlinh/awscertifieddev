@@ -95,3 +95,51 @@
 - Object name filtering possible (*.png)
 - Typically S3 events are sent in a second but can take longer
 - Use cases: generate thumbnails...
+
+### Event Source Mapping
+- Sources are:
+  - `Kinesis Data Stream`
+  - `SQS` & `SQS FIFO`
+  - `DynamoDB` Streams
+- Records need to be polled from the source
+- The Lambda function is then invoked synchronously
+- For `Kinesis Data Stream`:
+  - An `Event Source Mapping` creates an iterator for each shard, processes items in order
+  - Start with new items from the beginning or from the timestamp
+  - Processed items aren't removed from the stream so other consumers can still read them
+  - Low traffic: use batch window to accumulate records before processing
+  - Can process multi batches in parallel, up to 10 batches per shard
+  - If an error is returned the whole batch is reprocessed until successful
+  - Cam discard old events, restrict number of retries, split the batch on error
+  - Discarded events can go to `Destination`
+- For `SQS` / `FIFO`
+  - `Event Source Mapping` will long poll SQS
+  - Specify batch size
+  - Set up DLQ on SQS, not on Lambda (DLQ on Lambda is only for async)
+  - Or can use Lambda Destination
+
+## Event Destinations
+- `Asynchonous invocation`: Can send result of both error and sucess to:
+  - SQS
+  - SNS
+  - Lambda 
+  - EventBridge
+  - It's recommended to use `Destinations` instead of DLQ
+- `Event Source Mapping`: For discarded event batches, can send to:
+  - SQS
+  - SNS
+
+## IAM Roles 
+- Roles have to be attached to Lambda functions to grant access to other services
+- Whenever we use event source mapping to invoke function, Lambda uses the execution role to read event data
+- Best practice is to create 1 Lambda Execution Role per function 
+- Use resource-based policies to give othe services and accounts accesst to functions
+- An IAM principal can access if:
+  - The IAM policy attached to the pricipal allows it (user access)
+  - The resource-based policies allow it (service access)
+
+## Environment variables
+- Key Pair values in String form
+- Adjust the behavior without updating code
+- Helpful to store secrets
+- Secrets can be encrypted by Lambda service key or Customer Master Key
