@@ -143,3 +143,58 @@
 - Adjust the behavior without updating code
 - Helpful to store secrets
 - Secrets can be encrypted by Lambda service key or Customer Master Key
+
+## Lambda with X-Ray
+- `Lambda` is integrated with `CW Logs` and `Metrics`
+- To integrate with `X-Ray`, need to enable in `Lambda` config (`Active Tracing`)
+- Use `X-Ray` SDK in code
+- Ensure function has correct `IAM Execution Role`
+- Environment variables to communicate with X-Ray:
+  - `_X_AMZN_TRACE_ID`
+  - `AWS_XRAY_CONTEXT_MISSING`
+  - `AWS_XRAY_DAEMON_ADDRESS`
+
+## Lambda and VPC
+- By default `Lambda` functions launch outside of VPC so it cannot access resouces in VPC
+- Need to define VPC ID, subnet and Security Group
+- `Lambda` will create an ENI in subnets
+- Functions need to have role `AWSLambdaVPCAcessExecutionRole`
+- Other security groups also need to allow Lambda's sec group access
+- But if we put functions in VPC, they will not have public internet access
+- We can connect the functions to a `NAT Gateway` / `Instance`
+
+## Performance
+- RAM 128MB -> 10GB
+- More RAM = more vCPU
+- Timeout 3sec -> 900 seconds (15 mins)
+- Any task last longer than 15 mins should be carried out by other services like `Fargate`
+- `Lambda Execution Context` is a temporary runtime environment that init any external dependencies of lambda code
+- It's good for DB connection, https client, sdk client
+- The context can maintain for some time so that the next function can reuse it
+- `/tmp` temprorary dir to write files to
+- **Example**: DB connection should not be init inside handler code, it should be init outside so that the next function can reuse
+  ``` python
+  import os
+
+  DB_URL = os.getenv("DB_URL")
+  db_client = db.connect(DB_URL)
+
+  def get_user_handler(event, context):
+    return db_client.get(event["user_id"])
+  ```
+- Whatever takes too long to init should be left outside of the handler to be resused
+- `/tmp` max size 512MB, it remains when the context is frozen so that can be reused, useful for checkpoint your work
+
+## Concurrency
+- Up to 1000 concurrent executions if too many functions are spawned
+- Can set `reserve concurrency`
+- Each invocation over the concurrency limit will trigger a Throttle
+  - Sync => return ThrottleError 429
+  - Async => retry auto then go to DLQ
+- Open support ticket to higher limit
+- If we don't set the limit then 1 application can eat up all 1000 executions while other apps will be throttled and cannot scale
+
+## Cold starts and provisioned concurrency
+- Cold start means every time we start a function, we have to init from the beginning, first request can be slow for the first request
+- Provisioned concurrency mearns concurrency is allocated before the function is invoked, the cold start will never happen and latency is low
+- App Auto Scaling can manage concurrency, schedule or target utilisation
