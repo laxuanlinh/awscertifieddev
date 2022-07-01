@@ -195,6 +195,22 @@
 - If we don't set the limit then 1 application can eat up all 1000 executions while other apps will be throttled and cannot scale
 
 ## Cold starts and provisioned concurrency
-- Cold start means every time we start a function, we have to init from the beginning, first request can be slow for the first request
-- Provisioned concurrency mearns concurrency is allocated before the function is invoked, the cold start will never happen and latency is low
-- App Auto Scaling can manage concurrency, schedule or target utilisation
+- `Cold start` means every time we start a function, we have to init from the beginning, first request can be slow for the first request
+- `Provisioned concurrency` means concurrency is allocated before the function is invoked, the cold start will never happen and latency is low
+- `App Auto Scaling` can manage concurrency, schedule or target utilisation
+
+## Lambda Function Dependencies
+- If the code depends on external dependencies then zip them with the code 
+- If the file is less than 50MB, then upload to Lambda, else upload to S3 and reference to Lambda
+- Native libraries need tot be compiled on `Amazon Linux`
+- `AWS SDK` comes default with Lambda
+
+## Lambda and CloudFormation
+- We can define Lambda functions inline in CF YAML file, this is for simple functions without dependencies, use Code.ZipFile
+- We can zip and upload to S3 and refer in the YAML file with the following properties:
+  - S3Bucket
+  - S3Key: full path to zip
+  - S3ObjectVersion: if versioned bucket
+- If you update the code in S3 but not the version / path in YAML then CF won't update the function
+- If versioning in S3 is enabled, then the new version will have the same path and CF will pick up the changes
+- If cross account, CF of `account A` needs to access S3 bucket of `account B`, we can create an access policy to allow `account A` or we can update the execution role for S3 of `account B` of `account A`
