@@ -107,6 +107,7 @@
 ## Amazon SNS
 - Pub/Sub
 - The producer only sends message to 1 topic
+- The messages are not persisted, when SNS receives a message, it sends to whatever avaiable subscribers then deletes the message, if no subscribers are there then the message is lost
 - As many event receivers as we want
 - Up to 12,500,000 subscriptions per topic
 - 100,000 topics limit

@@ -35,11 +35,11 @@
 - It's very cheap
 
 ## Synchronous Invocations
-- Source from CLI, SDK, API Gateway...
+- Source from `CLI`, `SDK`, `API Gateway`...
 - The response is returned right away
 - Error handling happens on client side (retry, backoff)
 
-## Integration with ALB
+### Integration with ALB
 - To expose Lambda with an HTTPS endpoint, we need API Gateway or ALB
 - The Lambda function must be registered in a target group
 - The request is transformed into a JSON
@@ -117,7 +117,7 @@
   - Specify batch size
   - Set up DLQ on SQS, not on Lambda (DLQ on Lambda is only for async)
   - Or can use Lambda Destination
-
+ 
 ## Event Destinations
 - `Asynchonous invocation`: Can send result of both error and sucess to:
   - SQS
@@ -206,11 +206,59 @@
 - `AWS SDK` comes default with Lambda
 
 ## Lambda and CloudFormation
-- We can define Lambda functions inline in CF YAML file, this is for simple functions without dependencies, use Code.ZipFile
+- We can define Lambda functions inline in CF YAML file, this is for simple functions without dependencies, use `Code.ZipFile`
 - We can zip and upload to S3 and refer in the YAML file with the following properties:
-  - S3Bucket
-  - S3Key: full path to zip
-  - S3ObjectVersion: if versioned bucket
+  - `S3Bucket`
+  - `S3Key`: full path to zip
+  - `S3ObjectVersion`: if versioned bucket
 - If you update the code in S3 but not the version / path in YAML then CF won't update the function
 - If versioning in S3 is enabled, then the new version will have the same path and CF will pick up the changes
 - If cross account, CF of `account A` needs to access S3 bucket of `account B`, we can create an access policy to allow `account A` or we can update the execution role for S3 of `account B` of `account A`
+
+## Lambda Layers
+- Custom Runtimes: C++, Rust
+- Externalize dependencies to reuse
+- When create a function, go to `Layers` => `Add a Layer` and select the layer template so that we don't have to zip the dependencies with the code
+
+## Lambda Container Images
+- Allow Lambda functions as container up to 10GB from `ECR`
+- Pack all dependencies in a container
+- Can create own images as long as they implement `Lambda Runtime API`
+- `Lambda Runtime API` varies across languages
+
+## Lambda Versions
+- Each version has its own ARN
+- When we change code, we're working on `$LATEST`
+- When we publish a version, we create a new incremental version
+- Versions are immutable, incremental and can be accessed
+- Can create aliases like `dev`, `test` version of a version, they're mutable
+- Aliases enable `Blue/Green` deployment by assigning weights to lambda functions
+- When assigned weights, an alias can return response from 2 versions according to the weight ratio
+- Aliases have thier own ARN, aliases cannot reference other aliases
+
+## Lambda and CodeDeploy
+- Can help automate traffic shift for Lambda aliases
+- For example: we want to upgrade PROD from V1 to V2, CodeDeploy can increment the weight of V2 over time until it's 100% (`Linear`), deploy both and test V2 in small rate then switch 100% (`Canary`), or it can switch immediately to V2 (`AllAtOnce`) 
+- Can create Pre & Post Traffic hooks to check the health of the function to rollback
+  
+## Lambda Limits (**important**)
+- Mem allocation 128MB -> 10GB
+- Max execution time 15 mins
+- Environment variable 4KB
+- Disk capacity in /tmp 512MB
+- Concurrent execution 1000 (can be increased)
+- Deployment of zip file size < 50MB and when unzipped < 250MB
+- Can use /tmp to load other files at startup
+
+## Best practices
+- Perform heavy duty work outside of the functions handler to enable Lambda Execution Context
+  - Connect to DB
+  - Init AWS SDK
+  - Pull dependencies or datasets
+- Use environment variables for
+  - DB string, S3 bucket... don't put these in code
+  - Password, sensitive values encrypted using KMS
+- Mimize deployment package size 
+  - Break down functions
+  - Use layers to load dependencies
+- Avoid having a function call another function
