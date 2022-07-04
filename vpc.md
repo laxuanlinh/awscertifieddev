@@ -7,7 +7,7 @@
 - Each region has a default VPC created for you.
 - For VPC created on AWS, it only has a public subnet
 
-![](VPC.png)
+![](images/VPC.png)
 
 ***Internet Gateways***
 
@@ -15,7 +15,7 @@
 - Public subnets have a route to the Internet Gateways
 - NAT Gateways (NAT Instance) allows private subnets to access internet while remaining private.
 
-![](internetgateways.png)
+![](images/internetgateways.png)
 
 ***Network ACL and Security Group***
 

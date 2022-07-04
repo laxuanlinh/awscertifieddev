@@ -92,7 +92,7 @@ There are 2 types of encryption
 - Master + up to 15 replicas
 - Supports cross region replication
 - Read and write to Aurora with load balancer endpoints
-![](aurora.png)
+![](images/aurora.png)
 
 *Aurora Security*
 - Similar to RDS because using the same engines

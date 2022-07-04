@@ -35,7 +35,7 @@
 - **Access Control**: IAM policies to regulate access to the SQS API
 - **SQS Access Policies**: for cross-account access to SQS Queue, allows other services to write to SQS
   
-![](sqsdecouple.png)
+![](images/sqsdecouple.png)
 
 ### Create SQS queue
 - Go to `Simple Queue Service` => `Create queue`
@@ -128,7 +128,7 @@
 - JSON policy used to filter messages sent to SNS topic's subscriptions
 - If a subscription doesn't have a filter policy, it receives every message
 
-![](snssqsfanout.png)
+![](images/snssqsfanout.png)
 
 ### Create SNS Topic
 - Go to `SNS` => `Create Topic`
@@ -172,7 +172,7 @@
 - Producers could be `AWS SDK`, `Kinesis Producer Library(KPL)`, `Kinesis Agent`
 - Consumbers could be apps with `Kinesis Client Library(KCL)`, `AWS SDK`, `Lambda`, `Firehose`, `Data Analytics`
 
-![](kinesisdatastream.png)
+![](images/kinesisdatastream.png)
 #### Capacity Modes
 - **Provision Mode:**
   - Choose number of shards, scale manually or using API

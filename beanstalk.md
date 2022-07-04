@@ -11,7 +11,7 @@
         - Tiers: Web Server Environment Tier and Worker Environment Tier
         - You can create multiple environment UAT, dev, prod
 
-![](beanstalk.png)
+![](images/beanstalk.png)
 
 - Beanstalk supports multi languages
 - `Web Environment` is when we have an `ALB` to receive traffic from client and process. 

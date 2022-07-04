@@ -141,7 +141,7 @@
 - `Create deployment`
 
 
-![](codedeploy.png)
+![](images/codedeploy.png)
 
 ## CodeDeploy with EC2
 - We can use appspec.yml + deployment strategy to define how to deploy to EC2

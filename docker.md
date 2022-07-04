@@ -11,7 +11,7 @@
 - Each EC2 instance will have a ECS Agent to launch ECS tasks and register with the cluster
 - AWS will takes care of stating/stopping the container
 
-![](ecsec2launchtype.png)
+![](images/ecsec2launchtype.png)
 
 ### Fargate Launch Type
 - Don't have to provision the infra or manage EC2 instances
@@ -19,7 +19,7 @@
 - Just need to create task definitions, can increase number of tasks to scale.
 - AWS will run these tasks with the specified CPU/RAM 
   
-![](ecsfargatelaunchtype.png)
+![](images/ecsfargatelaunchtype.png)
 
 ### IAM Roles for ECS
 - `EC2 Instance Profile` is for `EC2 Instance Launch Type` only
