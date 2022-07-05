@@ -8,10 +8,10 @@
 - 2 commands to deploy to AWS
 - Recipe: `Transform Header` indicates it's SAM template
   - Transform: 'AWS::Serverless-2016-10-31'
-- Write Code
-  - AWS::Serverless::Function
-  - AWS::Serverless::Api
-  - AWS::Serverless::SimpleTable
+- Resources supported by SAM
+  - Lambda function `AWS::Serverless::Function`
+  - API Gateway `AWS::Serverless::Api`
+  - DynamoDB `AWS::Serverless::SimpleTable`
 - Package & Deploy
   - aws cloudformation package / sam package
   - aws cloudformation deploy / sam deploy
@@ -19,7 +19,7 @@
   - Build the application locally and send to `CloudFormation`: sam build
   - Package the application and send to S3: sam package
   - Deploy the application: sam deploy
-- To run and debug Lambda functions locally, use SAM CLI
+- To run and debug Lambda functions locally, use SAM CLI + AWS Toolkit
 
 ## Create SAM project
 - Run command in local
@@ -91,3 +91,19 @@
             DeploymentPreference:
                 Type: Canary10Percent10Minutes
   ```
+
+## Summary for the exam
+- SAM is built on `CloudFormation`
+- SAM requires the `Transform` and `Resources` sections
+- Commands to know
+  - sam build
+  - sam package
+  - sam deploy
+- SAM `Policy templates` for easy IAM policy definition
+- SAM is integrated with `CodeDeploy` update Lambda functions
+
+## Serverless application repository (SAR)
+- Managed repository for serverless applications
+- The applications are packaged using SAM
+- Build and publish applications that can be shared publicly or with other accounts
+- Can customize with environment variables
