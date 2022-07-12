@@ -37,6 +37,7 @@
 - Can be out of sync at time, but eventually consistent
 - Can only use keyword SELECT to read data, not write
 - Charges for cross region
+*RDS Multi-AZs*
 - There is 1 DNS name, if the master DB fails, the DNS automatically switch to the failover replica, no manual intervention needed to the app
 - Cross AZ needs to be enabled to recover in case an entire AZ fails.
 - The failover replica is not used for read, write or scaling, only used when there is a failure.
@@ -78,7 +79,7 @@ There are 2 types of encryption
 - Benefits of using IAM authentication:
   - Network in/out is encrypted with SSL
   - IAM to manage users instead of DB
-  - Can leverage AIM Roles and EC2 instance profiles for easy integration
+  - Can leverage IAM Roles and EC2 instance profiles for easy integration
 
 **Amazon Aurora**
 - Not open-source

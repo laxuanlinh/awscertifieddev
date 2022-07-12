@@ -51,7 +51,7 @@ It's how Route53 responds to DNS queries.
 - Assign a weight of 0 to stop sending requests to a record.
 - If all records have weight of 0 then they are returned equally.
 
-*Lacenty-based*
+*Latency-based*
 - Redirect to the resource that has the least latency 
 - Latency is based on traffic between users and AWS Regions
 - Route 53 will determine which region has the least latency to users and redirect the requests to there.
