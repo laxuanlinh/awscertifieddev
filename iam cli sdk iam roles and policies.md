@@ -16,7 +16,7 @@ To test a whether user can execute a command in aws cli, add --dry-run to the co
 - When execute a command on aws cli and fail, we usually get a long error message.
 - In order to decode this error message, we use ```sts``` command.
     ```
-    aws stst decode-authorization-message --encode-message <the long error message>
+    aws sts decode-authorization-message --encode-message <the long error message>
     ```
 - To decode a error message, the user needs to be authorized with ```sts:DecodeAuthorizationMessage``` permission
 
@@ -46,6 +46,7 @@ To test a whether user can execute a command in aws cli, add --dry-run to the co
 - AWS has limits on how many time we can call the API per sec.
 - For example: EC2 allows 100 calls/sec, S3 allows 5500 calls/sec
 - For ***Intermittent Error (5xx error)***, implement ```Exponential Backoff``` 
+- Exponential backoff means that instead of waiting for a fixed period of time between retries, we increase the retry time after each failure
 - For ***Consistent Errors***: request an API throttling limit increase
 - For Service Quotas, by default we can have up to 1152 vCPU, if we want to incease, we can open a ticket
 
