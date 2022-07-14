@@ -3,7 +3,7 @@
 - Content Delivery Network (CDN)
 - Improves read performance, content is cached at the edges
 - DDoS protection
-- Sits in front of S3 buckets to distribute and cache files at the edges
+- **Sits in front of S3 buckets to distribute and cache files at the edges**
 - Enhances security with CloudFront Origin Access Identity(OAI)
 - Can be used as an ingress to upload files to S3
 - Can be used with a custom origin
