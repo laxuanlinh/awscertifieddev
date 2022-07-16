@@ -2,7 +2,7 @@
 
 ## CloudWatch Metrics
 - Provide metrics for all AWS services like CPU Utilization, Networking...
-- Metrics belong tot namespaces
+- Metrics belong to namespaces
 - Dimension is an attribute of a metric (instance id, environment ...)
 - Up to 10 dimensions per metric
 - Can create CloudWatch dashboard of metrics
@@ -112,7 +112,7 @@
 ### How to enable X-Ray
 - Import AWS SDK
 - The SDK will capture API and DB calls
-- Install X-Ray daemon or enable X-Ray AWS Integration if on-premises, other AWS services already have the daemon
+- Install X-Ray daemon or enable X-Ray AWS Integration if on-premises, EC2 or ECS, other AWS services already have the daemon
 - The instance must have IAM Role with permission to run, in case of Lambdam the execution role must have the proper policy
 - On Beanstalk, use `.ebextensions/xray-daemon.config` file to enable
 
@@ -129,7 +129,7 @@
 - More segments = more cost
 - Can modify sampling without mod code
 - By default, X-Ray records 1st request each second, 5% of any additional requests
-- 1 request per sec is the reservoir, which ensures there is at least 1 trace is recorded as long as the service is serving requests
+- 1 request per sec is the reservoir, which ensures there is at least 1 trace is recorded
 - 5% is the rate of the rest when the reservoir is full (ex: 1 request is already sent)
 - Can create rule to set reservoir and rate
 - For example:
@@ -163,7 +163,9 @@
 - For fargate, since we cannot control over EC2 instances, we need to run sidecar
 
 ## CloudTrail
-- Provide governance, compliance and audit for AWS account
+- Records actions taken by AWS users and services as events
+- Action such as Login, see Billing, create services, Lambda creates new log group ...
+- Events are stored in `Event History`
 - Enabled by default
 - Get history of events/API calls within AWS account
 - Can put log into CW or S3
