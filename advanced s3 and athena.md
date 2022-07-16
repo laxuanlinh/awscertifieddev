@@ -8,8 +8,8 @@
 - MFA-Delete can only be enabled via CLI
 
 ## S3 Default Encryption vs Bucket Policies
-- It's a way to enforce bucket encyrption
-- Bucket policies still take predence over S3 Default Encryption
+- It's a way to enforce bucket encryption
+- Bucket policies still take precedence over S3 Default Encryption
 
 ## S3 Access Log
 - When enabled, Access Logs will record all requests to access the bucket
@@ -24,7 +24,7 @@
 ## S3 Replication
 - Versioning must be enabled in both source and destination bucket
 - There are 2 types of replication:
-  1. Cross Region Replication (```CRR```): compliance, lower latecy access, replication across accounts
+  1. Cross Region Replication (```CRR```): compliance, lower latency access, replication across accounts
   2. Same Region Replication (```SRR```): log aggregation, live replication between prod and test accounts
 - Buckets can be in different accounts
 - Copying is asynchronous in the background
