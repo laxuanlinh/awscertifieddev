@@ -15,13 +15,13 @@
   - `API Gateway`: create rest API and invoke lambda functions
   - `Kinesis`
   - `DynamoDB`: data inserted and invoke lambda
-  - `S3`
+  - `S3`: S3 events invoke Lambda
   - `CloudFront`: lambda at edge
-  - `CloudWatch Event` or `EventBridge`: when state of infra changes
+  - `CloudWatch Event` or `EventBridge`: when state of infra changes, scheduled events
   - `CloudWatch Logs`
   - `SNS`
   - `SQS`
-  - `Cognito`
+  - `Cognito`: events of user signin, login ...
 
 ## Pricing
 - Pay per calls

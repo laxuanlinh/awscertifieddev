@@ -217,9 +217,8 @@
 
 ## Calculation
 - RCU:
-  - Eventually consistent: 8KB/sec/object
-  - Strongly consistent (standard): 4KB/sec/object
-  - Transactional: 2KB/sec/object
+  - 1 RCU = 4KB/sec/item = 1 Strongly consistent = 2 Eventually consistent
+  - 2 RCU = 1 transactional read
 - WCU
-  - Standard write: 1KB/sec/object
-  - Transactional write: twice as standard write
+  - 1 WCU = 1KB/sec/item
+  - 2 WCU = Transactional write
