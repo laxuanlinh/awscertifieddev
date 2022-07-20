@@ -11,19 +11,27 @@
 
 ### Custom Metrics
 - Possible to define and send your own custom metrics to CW such as EC2 memory usage
-- Use API call **PutMetricData**
+- Use API call `PutMetricData`
 - Can use dimension to segment metrics
 - Metric resolution can be 60 secs or 1/5/10/30 sec (high cost)
-- Set resolution by **StorageResolution** API
+- Set resolution by `StorageResolution` API
 - It's possible to push metrics 2 weeks in the past or 2 hours in the future without errors
   ```
   aws cloudwatch put-metric-data --metric-name PageViewCount --namespace MyService --value 2 --timestamp 2016-10-20T12:00:00.000Z
   ```
+### Resolution
+- By default `Basic Monitoring` has an interval of **5 mins**
+- `Detailed Monitoring` has an interval of **1 min**
+- `Custom Metrics`:
+  - `Standard resolution` has an interval of **1 minute**
+  - `High resolution` has an interval of **1/5/30/60 seconds**
+- `CloudWatch Alarm` can have a max resolution of **10 seconds**
+
 ### CloudWatch Logs
 - `Log groups`: arbitrary name, usually the app name
 - `Log stream`: instances within app/log files/containers
 - Can define log expiration policies because by default it never expires
-- `Log Retention Policy` can be defined at `Log Stream` level
+- `Log Retention Policy` can be defined at `Log Group` level
 - CloudWatch Logs can send logs to
   - S3
   - Kinesis
@@ -113,7 +121,7 @@
 - Import AWS SDK
 - The SDK will capture API and DB calls
 - Install X-Ray daemon or enable X-Ray AWS Integration if on-premises, other AWS services already have the daemon
-- The instance must have IAM Role with permission to run, in case of Lambdam the execution role must have the proper policy
+- The instance must have IAM Role with permission to run, in case of Lambda the execution role must have the proper policy
 - On Beanstalk, use `.ebextensions/xray-daemon.config` file to enable
 
 ### X-Ray Concepts
@@ -137,7 +145,7 @@
   - Reservoir 1, rate 1 meaning 1 request per sec and 100% of the others are sent to X-Ray which is a lot
 
 ### X-Ray API (used by daemon)
-- `PutTraceSegment`: upload segment document to X-Ray
+- `PutTraceSegments`: upload segment document to X-Ray
 - `PutTelemetryRecords`: Used by daemon to upload telemetry
 - `GetSamplingRule`: retrieve all sampling rules
 - `GetSamplingTarget` & `GetSamplingStatisticSummaries`: advanced stuff
@@ -169,6 +177,7 @@
 - Can put log into CW or S3
 - A trail can be applied to all regions or a single region
 - If a resource is deleted, investigate CloudTrail first
+- Can only view the events in the last 90 days, older events can be view in logs in S3
 
 ### CloudTrail Events
 - `Management Events`: operation performed on resources in AWS account, logged

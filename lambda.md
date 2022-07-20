@@ -140,6 +140,7 @@
 
 ## Environment variables
 - Key Pair values in String form
+- Max 4KB
 - Adjust the behavior without updating code
 - Helpful to store secrets
 - Secrets can be encrypted by Lambda service key or Customer Master Key
