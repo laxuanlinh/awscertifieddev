@@ -20,10 +20,10 @@
 - `Consumber` will poll for messages, up to 10 messages at a time
 - `Consumer` then delete the message from queue using DeleteMessage API
 - When `consumers` are on EC2 instances, SQS will try its best to distribute messages
-- If a `consumer` is busy to process, the messages are processed by another `consumber`, thus best-effort message ordering and at least once delivery
-- After done with a message, `consumber` needs to delete that message so that other `consumers` won't consume it again
+- If a `consumer` is busy to process, the messages are processed by another `consumer`, thus best-effort message ordering and at least once delivery
+- After done with a message, `consumer` needs to delete that message so that other `consumers` won't consume it again
 - We can scale horizontally to increase the throughput
-- `CloudWatch` alarm can help trigger `Auto Scaling Group` to scale up when instances are at capacity 
+- `CloudWatch` alarm can help trigger `Auto Scaling Group` to scale up when producers and consumers are at capacity 
 
 ### SQS to decouple between application tiers
 - We can have a frontend tier to process incoming files and put to S3, this could take a long time but the files don't have to be processed in real time
