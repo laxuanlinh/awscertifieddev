@@ -56,7 +56,7 @@
 - For custom domain & HTTPS, recommend to use `CloudFront` in front of `AppSync`
 
 ## AWS Amplify
-- Create mobile and web applications, like Beanstalk but for mobile
+- Create mobile and web applications backend, like Beanstalk but for mobile, frontend apps to quickly setup backend
 - Amplify Studio: visually build a full stack app, front and backend
 - Amplify CLI: config Amplify backend with guided CLI workflow
 - Amplify Libraries: connect apps to AWS services (Cognito, S3 ...)
