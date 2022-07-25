@@ -89,3 +89,51 @@
   - `ACL` is a service to control which principals from another account can access resources, cannot control within the same account
   - `Permission boundary` is to set maximum permission an identity-based policy can grant to an IAM entity
   - `Organization SCP` is to set maximum permissions to an `Organization Unit`
+### CloudFront Key Pair has to be created by root user
+
+### Beanstalk vs CodeDeploy
+  - Beanstalk can do in place deploy, it can do Blue Green but have to create a new environment and switch manually, Beanstalk also does not give much control over the deployment either
+  - CodeDeploy can do Blue Green better, give much more control over the deployment
+### What is Access Advisor?
+  - It's to help audit service access, remove unnecessary permissions
+  - `Trusted Advisor` is to advise you to follow best practices
+  - `Amazon Inspector` auto detect security issues of the applications
+  - `Access Analyzer` helps identify resources being shared with other accounts
+
+### IAM users to access Billing and Budget
+  - By default only root user can access Billing.
+  - To give other users to access Billing, root user needst to first
+    - Activate IAM user access
+    - Attach IAM policies to the user
+  
+### Rolling with additional batches vs Immutable
+  - Both ensure the availability
+  - Rollin with additional batches takes more time but cheaper
+  - Immutable takes less time and can quickly rollback but more expensive
+
+### Dedicated Host vs Dedicated Instance
+  - `Dedicated Instance` is on a hardware dedicated to a single customer, isolated from dedicated instances of other AWS account but can still shares with other instances of the same account
+  - `Dedicated Host` is a physical dedicated server, allows running `license softwares` that bound to hardware, visibility to `sockets` and `physical cores`, more expensive than `Dedicated Instance`
+
+### Immutable and Traffic splitting deployment can cause burst balance lost due to the instances are replaced in some cases
+
+### IAM and ACM on SSL certificate
+  - `ACM` is used to manage SSL certificates
+  - In some regions where `ACM` is not available, use `IAM`
+  - `CloudFormation` cannot configure SSL
+
+### MFA for root users
+  - Root user supports the following MFA methods, except `MFA SMS`
+    - `Hardware MFA`
+    - `Virtual MFA`
+    - `U2F security key`: a USB plugged into computer
+
+### Scaling based on SQS
+  - When it comes to scaling instances polling from SQS, there are 2 recommended ways:
+    - `Target tracking with backlog per instance`
+    - `Target trakcing with acceptable backlog per instance`
+  - The number of messages in SQS might not change to the size of Auto Scaling group because number of instances based on many factors, not just number of messages but also time to process, thus we cannot use `Step scaling`
+
+### Security Group vs ACL
+  - `SecGroup` are stateful
+  - `ACL` are stateless and need to allow both inbound and outbound traffic, by default `ACL` allow all inbound and outbound traffic 

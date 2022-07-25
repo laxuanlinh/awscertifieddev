@@ -59,7 +59,7 @@
 - Sustain 2 concurrent facility failures
 - Good for big data analytics, gaming apps, content distribution
 
-### S3 Infrequent Access classes
+### S3 Infrequent Access class
 - For data that is less frequently accessed but rapid access when needed
 - Lower cost than S3 standard, charged over retrieval
 - **S3 Standard-Infrequent Access (S3 Standard-IA):**
