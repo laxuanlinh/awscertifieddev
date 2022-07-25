@@ -67,3 +67,25 @@
   - Create a new environment from the other account using the config in the bucket
 
 ### To improve Lambda performance, increase the RAM, increase timeout can help with long running tasks but not necessarily improve the performance
+
+### Lambda Authorizer vs Cognito User Pools
+  - Third party authentication => Lambda authorizer because it processes bearer token from OAuth or SAML
+  - Cognito uses user db managed by AWS so it's not third party
+
+### CDK vs SAM
+  - CDK defines infra using programming languages like Python, Node, .NET ... 
+  - SAM defines serverless infra using templates
+  
+### AWS Budget takes 5 weeks of usage data to generate budget forecast
+
+### What is burstable performance on EC2?
+  - It's a performance mode that allow t2, t3 ... instances to performe beyond the baseline.
+  - If the account is less than 12 months old then t2 instance (or t3 in regions where t2 not available) burstable is free of charge
+
+### The only resource-based policy that IAM supports
+  - `Trust policy` is the only resource-based policy that IAM service supports
+  - It specifies the condition for a principal to assume the role
+  - An `IAM Role` usually contains `identity-based` prolicies and `trust policies`
+  - `ACL` is a service to control which principals from another account can access resources, cannot control within the same account
+  - `Permission boundary` is to set maximum permission an identity-based policy can grant to an IAM entity
+  - `Organization SCP` is to set maximum permissions to an `Organization Unit`
