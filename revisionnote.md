@@ -137,3 +137,25 @@
 ### Security Group vs ACL
   - `SecGroup` are stateful
   - `ACL` are stateless and need to allow both inbound and outbound traffic, by default `ACL` allow all inbound and outbound traffic 
+
+### Maximum S3 upload size?
+
+### What is Firehose sink type?
+
+### What is AWS Glue? Data Pipeline? EMR?
+
+### Set default detailed monitoring for EC2?
+
+### Critical instances? Zonal and regional
+
+### CloudFormation parameter types?
+
+### EC2 SSD types? IOPS?
+
+### Internet Gateway? Subnet? Route table? Public internet?
+
+### What is dynamodb::updateItem?
+
+### What is signing API request?
+
+### Lambda image max size?
