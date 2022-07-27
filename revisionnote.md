@@ -136,23 +136,73 @@
 
 ### Security Group vs ACL
   - `SecGroup` are stateful
-  - `ACL` are stateless and need to allow both inbound and outbound traffic, by default `ACL` allow all inbound and outbound traffic 
+  - `ACL` are stateless and need to allow both inbound and outbound traffic, by default `ACL` allow all inbound and outbound traffic
+
+### EBS volume cannot be used in another AZ?
+  - EBS volumes are AZ locked, it's not possible to use in another AZ
 
 ### Maximum S3 upload size?
+  - Max size is 5TB but per upload is 5GB
 
 ### What is Firehose sink type?
+  - Firehose can support streaming data to services like `Redshift`, `S3`, `Splunk`, `Amazon Elastic Search` but cannot stream to `ElastiCache`
 
-### What is AWS Glue? Data Pipeline? EMR?
+### CodeBuild log
+  - By default `CodeBuild` logs about status of builds, this log is in `CloudWatch Logs`, if integrated with `S3` then the log can be moved to `S3` and later analyzed by `Anthena`
+  - `CloudTrail` can also integrate with `CodeBuild` but it only records the action and API from users, not the statuses of builds
+
+### How to backup DynamoDB locally?
+  - `Hive`, `Glue`, `Data Pipeline` and `EMR` can be used to extract some tables of `DynamoDB` and store in your S3 bucket for backup
+    - `AWS Glue`: serverless extract, transform and load (ETL) data
+    - `Apache Hive`: data warehouse, read, write, manage large amount of data
+    - `AWS Data Pipeline`: process, transform and move data between services like `S3`, `DynamoDB`, `RDS` ...
+    - `AWS EMR`: big data
+  - `DynamoDB` can 2 built-in backup methods `on-demand` and `point-in-time` but both of these write to an S3 bucket that you don't have access to so cannot download to local
+
+### Benefits of Reserved Instances
+  - Each reserve instance is discounted in the first 60 mins.
+  - If we run multiple instances but have only 1 reserved instance then the benefit time is devided across running instances
 
 ### Set default detailed monitoring for EC2?
+  - By default, basic monitoring for EC2 is enabled when launch from `Management Console`
+  - Detailed monitoring is enabled by default when use `CLI` or `SDK`
 
 ### Critical instances? Zonal and regional
+  - Purchase reserved instance for an AZ => `Zonal instance`, discount and `reserved capacity`
+  - Purchase reserved instance for a region => `Regional instance`, discount but `NO reserved capacity`
+
+### Lambda concurrency modes?
+  - `Reserved Concurrency`: since Lambda limits 1000 concurrent instances running per account, `Reserved Concurrency` ensures that a function has an amount of concurrency that no other functions will use, this also stops a function from bottlenecking other functions' concurrency
+  - `Provisioned Concurrency`: init a number of instances when invoked, when there are too many requests, instead of spawning new instances to process, Lambda can just use the init instances available, this helps with latency to serve requests
 
 ### CloudFormation parameter types?
+  - `String`, `Number`, `List<Number>`, `CommaDelimitedList`
+  - `AWS::EC2::KeyPair`, `SecurityGroup`, `SubNet`, `VPC`
+  - `List<AWS::EC2::VPC::Id>`, `List<AWS::EC2::SecurityGroup::Id>`, `List<AWS::EC2::SubNet::Id>`
 
 ### EC2 SSD types? IOPS?
+  - For `gp2` SSD, more volume = more IOPS, IOPS increase linearly from 0 -> 5,334GB (16.000IOPS), after that, larger volume is capped at 16.000 IOPS, cannot go higher
+  - For `io1`, the provisioned max throughput ratio to volume size is 50:1, which means 50GB has a max IOPS 50*50=2500IOPS, 200GB = 10000IOPS, no cap
+
+### CloudFront signed URL
+  - CF uses `Signed URL` to control who can access the content with expiration, it can only manage access of `a single file`
+  - `Signed Cookies` can also control access but for `multiple files`.
+  - `Signed URL` is more specific and takes prededence over `Signed Cookies`
+  - Can only have up to 2 key pairs
+  - The `public key` is with `CloudFront` and `private key` is to sign portion of the URL
 
 ### Internet Gateway? Subnet? Route table? Public internet?
+  - `Internet Gateway` is a service to connect VPC to public internet
+  - `Route Table` contains of rules (routes) of where traffic from subnet, gateway goes
+  - A subnet can only be associated with 1 table at a time, by default if not explicitly associated with any table, it's associated with the `Main Route Table`
+  - To access `Internet`, the `Subnet` of an `EC2` should be routed to an `Internet Gateway` in `Route Table`
+  - If a `Subnet` is routed to a `Internet Gateway`, it's a `public Subnet`, if not then it's a `private Subnet`
+
+### API Gateway security methods?
+  - `Resource-based policy`: allows or denies AWS accounts or IP addresses that can invoke APIs
+  - `IAM roles and policies`: allows which principals and execution units can create, deploy, manage and call APIs, can use with `IAM tags`
+  - `Lambda Authorizer` and `Cognito User Pools`
+  - `Endpoints policies for interface VPC endpoints`: attach resource-based policies to interface VPC endpoints to improve security of private APIs
 
 ### What is dynamodb::updateItem?
 
