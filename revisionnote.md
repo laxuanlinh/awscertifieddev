@@ -6,6 +6,8 @@
   - Resource based policy nad IAM role can only be shared between accounts within the same partition, not cross partitions. Ex: S3 bucket policies in `us-east` cannot be used in `ap-southeast`
 ### `CodeDeploy` when fails?
   - When a deployment fails, CodeDeploy will fall back to a last working version and deploy it to the failed instances
+### `Beanstalk` when fails?
+  - Unlike `CodeDeploy`, when deployment fails, Beanstalk will fall back to the last working version and deploy it to the new instances and replace failed instances
 ### `CodeDeploy Agent`, `Deployment Group`
   - `CodeDeploy Agent` is a software running on EC2 that allows it to be targeted by `CodeDeploy`
   - `Deployment Group` is a set of tagged EC2 instances, the group contains of some settings to be reused
@@ -37,7 +39,7 @@
   - If we create an organization in `AWS Organizations` then we can have `Organization Trail` to track all accounts in it
   - `CloudTrail` can only track at bucket level by default, need to enable `S3 Event Stream` to trail object activities
   - Members can only see `Organization Trail` but cannot modify/delete or see trail log in `S3`
-### What is the strategy that allows `ASG` to deploy applications to EC2?
+### What is the strategy that involves `ASG` to deploy applications to EC2?
   - To use `Blue/Green`, must use ALB so that ASGs of 2 versions can connect to the ALB
   - `In-place deployment` means deploy to existing EC2 instances, each instance is stopped then the new version is deployed and validated
 ### Where condition is used in `CloudFormation` template?
