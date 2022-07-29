@@ -80,4 +80,4 @@
 
 ### Policy types that can only limit but cannot grant permissions
 
-### What are Access Advisor and IAM Access Analyzer
+### What are Access Advisor and IAM Access Analyzer?
