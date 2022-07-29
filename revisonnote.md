@@ -67,3 +67,17 @@
   - Create a new environment from the other account using the config in the bucket
 
 ### To improve Lambda performance, increase the RAM, increase timeout can help with long running tasks but not necessarily improve the performance
+
+### What is IAM Identity-based policies and what resource-based policy that IAM supports?
+
+### Differences between dedicated instances and dedicated hosts
+
+### What is EC2 burst balance
+
+### What is U2F security key?
+
+### What is CDK?
+
+### Policy types that can only limit but cannot grant permissions
+
+### What are Access Advisor and IAM Access Analyzer
