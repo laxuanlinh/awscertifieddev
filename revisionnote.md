@@ -159,19 +159,19 @@
     - `Apache Hive`: data warehouse, read, write, manage large amount of data
     - `AWS Data Pipeline`: process, transform and move data between services like `S3`, `DynamoDB`, `RDS` ...
     - `AWS EMR`: big data
-  - `DynamoDB` can 2 built-in backup methods `on-demand` and `point-in-time` but both of these write to an S3 bucket that you don't have access to so cannot download to local
+  - `DynamoDB` has 2 built-in backup methods `on-demand` and `point-in-time` but both of these write to an S3 bucket that you don't have access to so cannot download to local
 
 ### Benefits of Reserved Instances
   - Each reserve instance is discounted in the first 60 mins.
-  - If we run multiple instances but have only 1 reserved instance then the benefit time is devided across running instances
+  - If we run multiple instances but have only 1 reserved instance then the benefit time is divided across running instances
 
 ### Set default detailed monitoring for EC2?
   - By default, basic monitoring for EC2 is enabled when launch from `Management Console`
   - Detailed monitoring is enabled by default when use `CLI` or `SDK`
 
 ### Critical instances? Zonal and regional
-  - Purchase reserved instance for an AZ => `Zonal instance`, discount and `reserved capacity`
-  - Purchase reserved instance for a region => `Regional instance`, discount but `NO reserved capacity`
+  - Purchase reserved instance for an AZ => `Zonal instance`, discount for a fixed size and `reserved capacity`
+  - Purchase reserved instance for a region => `Regional instance`, discount for flexible size but `NO reserved capacity`
 
 ### Lambda concurrency modes?
   - `Reserved Concurrency`: since Lambda limits 1000 concurrent instances running per account, `Reserved Concurrency` ensures that a function has an amount of concurrency that no other functions will use, this also stops a function from bottlenecking other functions' concurrency
@@ -206,8 +206,22 @@
   - `Lambda Authorizer` and `Cognito User Pools`
   - `Endpoints policies for interface VPC endpoints`: attach resource-based policies to interface VPC endpoints to improve security of private APIs
 
+### KMS Encryption using Lambda
+  - To encrypt data larger than 4KB, Lambda needs to use `Envelop Encryption` and store the encrypted data as a file because the max size of env variable in Lambda is 4KB (probably to use KMS' Encrypt API)
+
+### VPC FLow Logs can be created for both VPC and subnets, which ever it's created for is monitored by the flow log
+
 ### What is dynamodb::updateItem?
+  - Update an existing item or create a new item if it doesn't exist
 
 ### What is signing API request?
+  - When sending requests to AWS, we need to sign the request using access key
+  - If we're using `CLI` or `SDK`, they will sign for us automatically
+  - Don't need to sign anonymous requests to `S3 endpoints`
+  - We need to manually sign `HTTP requests` when the programming language does not have `SDK` support
 
 ### Lambda image max size?
+  - 10GB
+  - Containers running on `Lambda` must implement `Lambda` API
+  - The images must be created in ECR by the same AWS account as `Lambda`'s account
+  - Can test locally using `Lambda Runtime Interface Emulator`
