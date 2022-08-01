@@ -1,0 +1,33 @@
+- Java Core 
+    - OOP
+    - Java 8 features
+    - Stream
+    - Functional programming
+    - How to throw Exception in Lambda expression
+    - Collection API
+    - Multi thread maybe
+
+- Spring Boot
+    - Spring
+    - Spring Boot
+    - Model
+    - Controller
+    - Annotations
+    - How to acces data using JPA, Hibernate
+
+- SQL
+    - Create and use index
+    - Aggregators
+
+
+Java Core
+
+- Concepts of OOP
+  - `Inheritence`
+  - `Encapsulation`
+  - `Abstraction`
+  - `Polymorphism`
+- `Inheritence`: is a character that a class can inherit properties and behaviors from another class, in Java only single inheritence is permitted
+- `Encapsulation` means bundling data and methods that operate on this data in a single unit, in case of Java it's an object
+- `Abstraction` means hiding the execution and data of an object from outside access and only expose the necesscary part in a controlled manner
+- `Polymorphism` is the ability of an object to behave differently depends on the way we instantiate it. Let's say we have a class Animal and Dog and Bird inheriting from Animal. When we instantiate an Animal object, that could be a generic Animal, could be a dog or a chicken, depends on the way we instantiate it, they can make different sound
