@@ -31,3 +31,15 @@ Java Core
 - `Encapsulation` means bundling data and methods that operate on this data in a single unit, in case of Java it's an object
 - `Abstraction` means hiding the execution and data of an object from outside access and only expose the necesscary part in a controlled manner
 - `Polymorphism` is the ability of an object to behave differently depends on the way we instantiate it. Let's say we have a class Animal and Dog and Bird inheriting from Animal. When we instantiate an Animal object, that could be a generic Animal, could be a dog or a chicken, depends on the way we instantiate it, they can make different sound
+
+- Collection API:
+
+Types of Java Collection interfaces:
+- `List`: can contain duplicate values, ordered by default, retrieval through iterator or index
+- `Map`: can contain duplicate values, unique keys, not always not ordered, retrieval through keys, loop through by keyset, value or entry set
+- `Queue`: can contain duplicate values, ordered by default, must add and remove in a specific order, retrieval by peeking or polling
+- `Set`: cannot contain deplicate values, not always ordered, retrieval by iterator
+
+Classes in List
+- ArrayList: ordered collection of objects, implements List and Queue
+- LinkedList: ordered collectin of objects, implements 
