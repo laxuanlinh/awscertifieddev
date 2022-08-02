@@ -41,5 +41,56 @@ Types of Java Collection interfaces:
 - `Set`: cannot contain deplicate values, not always ordered, retrieval by iterator
 
 Classes in List
-- ArrayList: ordered collection of objects, implements List and Queue
-- LinkedList: ordered collectin of objects, implements 
+- `ArrayList`: ordered collection of objects, implements List
+  - Use dynamic array to store elements, starts at 10 and increases
+  - Adding elements takes O(n) time, accessing takes constant time
+  - Removing takes O(n) time
+  - Good for storing and accessing elements
+- `LinkedList`: ordered collectin of objects, implements List and Deque
+  - Use Doubly linked list to store elements, starts at 0
+  - Adding and accessing elements both take proportion to the number of items, but constant if adding to the front or end
+  - Removing takes constant time
+  - Good for manipulating elements
+
+Classes in Map:
+- `HashMap`: 
+  - Not guarantee order
+  - Allow 1 null key (position 0) and multi null values
+  - Use `hashCode()` and `equals()` for `put()` and `get()` operations so key classes should have good implementations of these methods, that's why immutable wrapper classes like String and Integer are good to be keys
+  - Unsynchronized and not threadsafe so should not be used in multi thread operations
+  - Get / put / remove O(1)
+- `LinkedHashMap`:
+  - Maintain the insertion order
+  - Use doubly linked list to store elements and more memory
+  - The rest is same as `HashMap`
+- `Hashtable`
+  - Synchronized so thread safe
+  - Does not allow null key or null value
+  - The rest is exactly the same as `HashMap`
+- `TreeMap`
+  - Sorted according to natural ordering (alphabet or number)
+  - Allow multi null values only
+  - Store elements in a hierachical tree
+  - Unsynchronized not threadsafe
+  - Get / Put / Remove take O(log(n))
+  - Use less memory than `HashMap`, use TreeMap when need to save memory, not sure how many elements will be stored, extract elements in a natural order
+
+How `HashMap` works?
+- At the beginning `HashMap` has an array of `16 Node`, when 75% of `Nodes` are used, they're doubled to `32`
+- In put operation, `HashMap` use has function to assign the key to one of the `Nodes`
+- If 2 keys after being hashed are in the same `Node` then they're linked in a `Linked list`
+- In get operation, the key is hashed to find the position of the `Node`, then the hash value is compared to the first element of `Linked list`, then the plain text key, if they match then the value is returned, if not then proceeds to the next element in the `Linked list`
+- In Java 8, the `Linked list` is replaced by a `Balanced tree` to improve the performance when too many hashed keys are in the same node
+
+Classes in Set
+- `HashSet`: 
+  - Not ordered or sorted
+  - Keys are hashed so requires elements to have good implementations of `hashCode()` and `equals()`
+  - Faster
+  - Not synchronized
+  - Insertion and `contains()` complexity is from constant to O(n) (worst case)
+- `TreeSet`:
+  - Sorted 
+  - Stored in a self-balancing tree so requires objects to have implemetations of `Comparible` or `Comparator`
+  - Not synchronized
+  - Insertion and `contains()` always take O(n) time
