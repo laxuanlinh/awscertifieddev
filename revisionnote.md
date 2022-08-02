@@ -137,8 +137,10 @@
   - The number of messages in SQS might not change to the size of Auto Scaling group because number of instances based on many factors, not just number of messages but also time to process, thus we cannot use `Step scaling`
 
 ### Security Group vs ACL
-  - `SecGroup` are stateful
-  - `ACL` are stateless and need to allow both inbound and outbound traffic, by default `ACL` allow all inbound and outbound traffic
+  - `SecGroup` are stateful, if it allows an incoming request, the response to that request is also allowed, regardless of Outgoing rules
+  - `ACL` are stateless, the incoming and outgoing request/response are independent
+  - By default, a `VPC` is attached to a default `NACL`, this default `NACL` `allows` all inbound and outbound traffic
+  - If we create a custom `NACL` to attach to a subnet, by default it `denies` all inbound and outbound traffic
 
 ### EBS volume cannot be used in another AZ?
   - EBS volumes are AZ locked, it's not possible to use in another AZ
@@ -147,7 +149,7 @@
   - Max size is 5TB but per upload is 5GB
 
 ### What is Firehose sink type?
-  - Firehose can support streaming data to services like `Redshift`, `S3`, `Splunk`, `Amazon Elastic Search` but cannot stream to `ElastiCache`
+  - `Firehose` can support streaming data to services like `Redshift`, `S3`, `Splunk`, `Amazon Elastic Search` but cannot stream to `ElastiCache`
 
 ### CodeBuild log
   - By default `CodeBuild` logs about status of builds, this log is in `CloudWatch Logs`, if integrated with `S3` then the log can be moved to `S3` and later analyzed by `Anthena`
@@ -225,3 +227,196 @@
   - Containers running on `Lambda` must implement `Lambda` API
   - The images must be created in ECR by the same AWS account as `Lambda`'s account
   - Can test locally using `Lambda Runtime Interface Emulator`
+
+### API Gateway HTTP
+  - HTTP is for `Lambda` and other services of AWS like HTTP endpoints of applications
+  - `API Gateway` uses `Lambda Authorizer`, `Cognito` and `IAM policies` but not `AWS WAF`
+
+### Firehose vs Data Stream
+  - `Firehose` is to load data stream to other AWS services like `Redshift`, `S3`, `ElasticSearch`, it's fully managed and cheaper
+  - `Data Stream` is to ingest data stream and pass down to customized applications, it's managed by AWS but still needs config for shards
+
+### Step Function Express and Standard workflow
+  - `Standard Step Function Workflow `supports all service integrations, design pattern ... long running workload up to 1 year
+  - `Express Step Function Workflow` does not support all integrations or pattern, short burst workload for 5 mins
+
+### S3 Object Ownership setting
+  - By default when another account upload to your bucket, that account own the object and can use `ACL` to grant access to that object
+  - `Object Ownership` is a bucket-level setting that allows you to disable this and own all objects inside the bucket thus centralize the access using policies
+
+### `GenerateDataKey` vs `GenerateDataKeyWithoutPlainText`
+  - Their operations are the same except `GenerateDataKeyWithoutPlainText` returns an encrypted version of the key, this is useful when you don't want to encrypt rightaway and save it for later
+  - When use encrypted data key, call `Decrypt` API to decrypt the data key first, the rest is similar to `GenerateDataKey`
+  - `GenerateDataKeyWithPlaintext` doesn't exist, by default `GenerateDataKey` is already plaintext
+
+### Query authentication is useful to authenticate signed URL to S3
+
+### S3 bucket replication
+  - `Same-Region Replication` and `Cross-region Replication` can be config at `bucket level`, at `shared prefix level` or at `object level` using tag
+  - The object lifecycle actions are not replicated
+
+### CloudWatch resolutions
+  - `Basic Monitoring` sends data to `CloudWatch` every `5 mins`
+  - `Detailed Monitoring` sends every `1 min`
+  - `Custom metric` high-resolution can send metrics every `5/10/30/60 secs`
+  - `Basic` and `Detailed Monitoring` cannot send CPU and Memory usage, needs to use `CloudWatch Agent`
+
+### State Machine and Activities in Step Function
+  - `State Machine` is a JSON file to orchestra tasks
+  - `Activity` is a feature that allows tasks in a S`tate Machine` to have work done somewhere else like `EC2` instances
+
+### CodeDeploy Agent usage
+  - Allows `EC2` instances to be used by `CodeDeploy`
+  - It can store app revision, logs and also can clean up
+
+### CodeDeploy auto rollback default behaviors?
+  - By default `CodeDeploy` deploys the last working version to a new deployment with a new ID
+
+### Lambda Custom Sources? CW Event Rules?
+  - If an AWS service does not have direct connection to Lambda, can create a rule in CW Event to invoke Lambda functions
+  - There is no such thing as Lambda Custom Sources
+
+### CodeDeploy lifecycle event order?
+  - App stop => Download Bundles => BeforeInstall => Install => AfterInstall => AppStart => ValidateService => BeforeBlockTraffic => BlockTraffic => AfterBlockTraffic => BeforeAllowTraffic => AllowTraffic
+
+### CodeCommit encryption?
+  - Repositories are encrypted at rest by default
+
+### Kinesis Agent vs Kinesis Producer Library
+  - Both Agent and KPL are to send data to Data Stream but Kinesis Agent is better
+
+### CloudTrail S3 cross-account
+  - The owner of a bucket can only receive CloudTrail access log if he is also the owner of the object
+
+### DynamoDB scan large table
+  - It's recommended to use `Parallel Scan` when query a large table.
+  - `Filter Expression` does not help speed this up because it only filters after the `Scan` is complete
+
+### CodePipeline automation?
+  - When create source of `CodePipeline` in console, `CodePipeline` automatically creates a `CW Event` to watch for code changes in `CodeCommit` or `S3`
+
+### Enable KMS encryption in requests to S3
+  - When SSE:KMS encryption is enforced in S3, the request to put objects needs to include header `'x-amz-server-side-encryption:'aws:kms'`
+  - *NOT* `'x-amz-server-side-encryption:'SSE:KMS'`
+
+### Redis with cluster mode
+  - `Redis` is region bound regardless of cluster enabled or disabled
+  - `Redis` cluster mode allows data to be partitioned into `1-500` shards, if the mode is disabled then there is only 1 shard
+  - But when `enabled`, modifiability is more limited, can't manually promote a replica node to a primary node
+  - Data sync between primary and replica nodes is done `asynchronously` regardless of cluster mode `enabled` or `disabled`
+
+### Cross account permissions
+  - To grant cross account permissions for Account B to access Account A's resources:
+    - `Account A` creates a new role and attaches an `identity-based policy` to it to access the resource
+    - `Account A` adds a `trust policy` to identify `Account B` as the princile that can assume the role
+    - `Account B` then delegates permission to assume the role to any user of this account
+
+### Options for real-time application backend?
+  - Use websocket on `Gateway API`, `DynamoDB` with `Lambda`
+  - Use `AppSync` because it can create backend using schemas and also support real-time
+
+### SES vs SNS
+  - SES can only send email
+  - SNS can send email and SMS
+
+### Elastic IP?
+  - Elastic IP is a reserved public IP
+  - If we run a DNS server on an EC2, we need a public IP
+
+### What is CodeStar?
+  - It's a service that group all CI/CD services together
+  - Can provide a CI/CD pipeline from start to finish in a few mins and provides a monitor dashboard
+
+### How to deploy X-Ray to Fargate
+  - Create a Docker image and upload to ECR and deploy to ECS cluster
+  - Provide the container with proper role
+
+### Which property ensure X-Ray Daemon is discovered on ECS?
+  - `AWS_XRAY_DAEMON_ADDRESS` this is to set the host and port of daemon listener
+
+### How to centralize X-Ray cross-account management?
+  - Install `X-Ray deamon`
+  - Create a role in target unified account and allow all users to assume it
+  - Configure `X-Ray deamon` to assume the role
+
+### What is S3 transfer acceleration?
+  - Transfer Accelerator is a service that helps speed up the upload processing using edge locations
+
+### How to define Lambda functions in CloudFormation templates?
+  - To define Lambda functions in CF templates:
+    - Upload lambda code as zip to S3 and refer to its key in field `AWS::Lambda::Function`
+    - Write the lambda code inline in field `AWS::Lambda::Function` as long as it does not have dependencies
+
+### SQS MessageGroupID vs MessageDeduplicationID?
+  - If a message with `MessageDeduplicationID` is sent successfully, any following messages with the same `MessageDeduplicationID` are accepted but will not be sent in the next 5 mins
+  - `MessageGroupID` is to group messages together and order them, messages in the same group are processed one by one
+
+### How to paginate AWS CLI API calls?
+  - `--starting-token` and `--max-items`
+  - `--page-size` specifies the number of result each CLI request retrieves, CLI still makes multi calls to retrieve full list thus this should only be done on a small data set.
+
+### How to enable S3 web hosting?
+  - We need to enable `Public access` of the bucket
+  - Beside that we may also need to create a bucket policy to allow public access
+
+### Gateway endpoint vs Interface endpoint in VPC
+  - `Endpoints` are virtual devices and components of VPC, they are highly available, they helps connect VPC to other AWS services
+  - There are 2 types of endpoints:
+    - `Gateway endpoint`: connect to `S3` and `DynamoDB`
+    - `Interface endpoint`: connect to everything else
+  - There is no such thing as `S3 API`, only `API Gateway` has API
+
+### ELB 5xx errors
+  - `500 Internal error`: application errors or ACL errors
+  - `501 Not implemented`: Transfer-Encoding header with invalid value
+  - `502 Bad gateway`: connected to server but having error with the connection
+  - `503 Service unavailable`: has not registered with any target group
+
+### Does MySQL offer storage auto scaling?
+  - Yes, all DBs in RDS does
+
+### API gateway authentication using DynamoDB
+  - Use `Lambda Authorizer`.
+  - `Cognito` uses `LiteSQL`, not `DynamoDB`
+
+### Can run CodeBuild locally using CodeBuild Agent to debug
+
+### S3 strongly consistent data model?
+  - By default `S3` applies `Strongly consistent` data model to objects in all buckets for `PUT` and `DELETE` operations
+  - If we delete an object and immediately access it, `S3` will return nothing
+  - If we delete a bucket and list all buckets, the deleted bucket still appears because buckets have `Eventual consistency model`
+
+### Replacing data and immediately access it in S3?
+  - Since objects in buckets have strongly consistent data model by default, replacing or deleting objects then immedately accessing will always returns the latest version
+
+### CloudFront Origin Group failover?
+  - To set up `Origin Group`, need to create at least `2 origins` and add them to the group, 1 is primary and 1 is secondary
+  - When a cache hit, `CF` returns the file but when cache miss, it routes to `Primary origin`, if the `Primary origin` fails then it routes to `Secondary origin`
+  - All traffic to `CF` is routed to `Primary origin` if cache miss even when the previous request failed over to `Secondary origin`
+
+### How CloudTrail manages EBS in EC2 ?
+  - If EBS is created along with EC2 then the event `CreateVolume` is not recorded by `CloudTrail`
+
+### Set DeleteOnTermination on EBS while EC2 is running
+  - Can use DeleteOnTermination attribute in CLI command while the instance is running
+
+### EBS encryption
+  - If enable encryption for a region then there is no way to change it for individual EBS volume
+
+### How to configure redirect for ALB using CLI?
+  - Can use `query-string` with key value pairs to match the URL
+
+### RDS multi AZ features
+  - `RDS` performs OS updates on the `standby` instance then promote it to `primary`, the old `primary` is now a new `standby` and OS updated 
+  - `Primary` and `standby` are `synchonously` replicated so that `standby` always has the latest data
+  - `Read replicas` are replicated `asynchronously`
+
+### EFS classes
+  - Standard: frequently accessed
+  - Standard Infrequent Access (IA): infrequent access
+  - One zone: also frequenly access but not as highly available
+  - One zone Infrequent Access (IA): also infrequent access but not as highly available
+  - File storage + concurrently accessed by EC2 => EFS
+
+### Max number of SQS messagges can be retrieved at the same time?
+  - 10
