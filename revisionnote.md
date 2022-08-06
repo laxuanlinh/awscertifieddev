@@ -420,3 +420,25 @@
 
 ### Max number of SQS messagges can be retrieved at the same time?
   - 10
+
+### How to use Swagger file?
+  - Can deploy SAM template with inline Swagger definition 
+  - Or can define a Swagger file and refer it in SAM template
+  - Basically SAM deploys Swagger
+
+### Access key best practices
+  - Remove all or not create any root account access keys
+  - Use IAM Role where possible
+  - Don't embed it in code, rotate periodically, remove unused keys, use MFA
+
+### How to securely transfer data between EC2 and EBS?
+  - Enable EBS encryption
+  - Use IAM role to limit access
+  - **Creating encrypted EBS volume is useful to move between AZs but has nothing to do with transfer data between EC2 and EBS, don't select this**
+
+### How to define a Beanstalk multi container Docker environment?
+  - A `Beanstalk multi container Docker env` requires a `Dockerrun.aws.json` file, which is an `ECS Task Definition` file even though `ECS` has nothingg to do with it
+
+### What to do when get ProvisionedThroughputExceededException?
+  - Modify the application to use AWS SDK 
+  - Modify the app to use exponential backoff
