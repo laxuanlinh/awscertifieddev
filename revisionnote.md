@@ -193,7 +193,8 @@
   - `Signed Cookies` can also control access but for `multiple files`.
   - `Signed URL` is more specific and takes prededence over `Signed Cookies`
   - Can only have up to 2 key pairs
-  - The `public key` is with `CloudFront` and `private key` is to sign portion of the URL
+  - The `public key` is with `CloudFront` and `private key` is to sign portion of the URL, the other portion is signed by `key ID`
+  - The `public key` uploaded to `CF` must be assigned to a `trusted signer`
 
 ### Internet Gateway? Subnet? Route table? Public internet?
   - `Internet Gateway` is a service to connect VPC to public internet
@@ -286,7 +287,7 @@
   - Both Agent and KPL are to send data to Data Stream but Kinesis Agent is better
 
 ### CloudTrail S3 cross-account
-  - The owner of a bucket can only receive CloudTrail access log if he is also the owner of the object
+  - The owner of a bucket can only receive `CloudTrail` access log if he is also the owner of the object
 
 ### DynamoDB scan large table
   - It's recommended to use `Parallel Scan` when query a large table.
@@ -379,7 +380,9 @@
   - Use `Lambda Authorizer`.
   - `Cognito` uses `LiteSQL`, not `DynamoDB`
 
-### Can run CodeBuild locally using CodeBuild Agent to debug
+### Can run CodeBuild locally using `CodeBuild Agent` to build and debug
+
+### Can build locally using `CodeBuild Agent` as a `cost-effective` way to test the build before building on server
 
 ### S3 strongly consistent data model?
   - By default `S3` applies `Strongly consistent` data model to objects in all buckets for `PUT` and `DELETE` operations
@@ -442,3 +445,37 @@
 ### What to do when get ProvisionedThroughputExceededException?
   - Modify the application to use AWS SDK 
   - Modify the app to use exponential backoff
+  - **DO NOT** increase write and read throughput if the issue is only write or read
+
+### How to use X-ray in ECS containers?
+  - Build the containers from `amazon/aws-xray-daemon` base image
+
+### Lambda function's iterator age metric growing and processing time more than expected?
+  - Increase the performance by `increasing RAM` of Lambda
+  - Increase stream throughoutput by `increasing shards`
+
+### `CloudWatch` filter only works for the events that happens after it's created
+
+### To check the impact on resources when updating `CloudFormation` templates, use change sets
+
+### `CloufFormation` `EC2` instances slow to set up?
+  - Create an `AMI` with installed software to reduce boot time
+  - Update the template to include the `AMI`
+
+### What `FIFO` queues have anything to do with deduplication?
+  - Probably nothing, other answers are just bad
+
+### `API Gateway` generates API key => User receives 403 Forbidden ?
+  - `createUseagePlanKey` to associate the newly created API key with the useage plan
+  - You create keys using `createApiKeys` or `importApiKeys`, cannot be both, so this option is not correct
+
+### `KMS` key rotation
+  - Key rotation is only supported for custom keys if they're generated within `AWS KMS HSM`s
+  - Imported custom keys, asymmetric or keys generated in `CloudHSM` clusters are not supported
+  - If use imported or asymmetric keys then must manually rotate
+
+### How to enable `CORS` when integrate `S3` web with `API Gateway`
+  - Needs to enable `CORS` on `API Gateway`
+
+### Can restrict access to some items in DynamoDB table using primary keys
+
