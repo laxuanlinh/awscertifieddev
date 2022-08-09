@@ -35,11 +35,12 @@
   - There is no such thing as `Audit Trail` in `SSM`, `SSM` can only be audited by `CloudTrail`
 ## `SQS` max messagge size
   - Max is 256KB
+  - Can use `SQS Extended Client Library` to extend to 2GB
 ## What is `Organization Trail`? Does `CloudTrail` track only at bucket level? Access to `Organization Trail`
   - If we create an organization in `AWS Organizations` then we can have `Organization Trail` to track all accounts in it
   - `CloudTrail` can only track at bucket level by default, need to enable `S3 Event Stream` to trail object activities
   - Members can only see `Organization Trail` but cannot modify/delete or see trail log in `S3`
-## What is the strategy that involves `ASG` to deploy applications to EC2?
+## What is the strategy that involves `ASG` to deploy applications to `EC2`?
   - To use `Blue/Green`, must use ALB so that ASGs of 2 versions can connect to the ALB
   - `In-place deployment` means deploy to existing EC2 instances, each instance is stopped then the new version is deployed and validated
 ## Where condition is used in `CloudFormation` template?
@@ -117,7 +118,7 @@
   - `Dedicated Instance` is on a hardware dedicated to a single customer, isolated from `Dedicated Instance` s of other AWS account but can still shares with other instances of the same account
   - `Dedicated Host` is a physical dedicated server, allows running `license softwares` that bound to hardware, visibility to `sockets` and `physical cores`, more expensive than `Dedicated Instance`
 
-## `Immutable`  and Traffic splitting deployment can cause burst balance lost due to the instances are replaced in some cases
+## `Immutable`  and `Traffic splitting` deployment can cause burst balance lost due to the instances are replaced in some cases
 
 ## IAM and `ACM` on SSL certificate
   - `ACM` is used to manage SSL certificates
@@ -523,4 +524,10 @@
   - During immutable deployment, another ASG is created which can cause running out of on-demand instance limit
 
 ## The provisioned write capacity for each GSI must be equal or greater than the base table, otherwise throttling can occur
+
+## System with different components that scale separately on `Beanstalk`?
+  - Best to deploy components to different `Beanstalk` environments because each environment is optimized for a type of application.
+  - By specifying different tier for different components, `Beanstalk` can use the right capacity and scale accordingly
+
+## To set alert on `CloudWatch` using `CLI`, use `put-metric-data` command
 

@@ -1,22 +1,17 @@
 - Java Core 
     - OOP
-    - Java 8 features
     - Stream
     - Functional programming
-    - How to throw Exception in Lambda expression
     - Collection API
-    - Multi thread maybe
 
 - Spring Boot
-    - Spring
-    - Spring Boot
-    - Model
-    - Controller
-    - Annotations
-    - How to acces data using JPA, Hibernate
+    - Build a basic REST API app using spring boot, data jpa and h2
+    - Revisit relationships in JPA, the infinite resursion issue
+    - Some basic annotations for controller, service, repository, models
+    - Connect to DB using spring data jpa
 
 - SQL
-    - Create and use index
+    - Joins and Union
     - Aggregators
 
 
