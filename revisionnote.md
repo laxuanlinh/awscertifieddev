@@ -531,3 +531,57 @@
 
 ## To set alert on `CloudWatch` using `CLI`, use `put-metric-data` command
 
+## Update application in `Beanstalk`?
+  - Zip the application and upload to `Beanstalk` console or use `CLI`
+  - No need to rebuild or build new environment
+
+## How many keys are used in `Envelop Encryption`?
+  - 2 keys, `Customer Master Key` is to encrypt/decrypt `Data key`
+  - `Data key` is to encrypt data
+
+## Which service uses JWT?
+  - After a user logs in, `Cognito User Pool` returns a JWT
+  - `Cognito Identity Pool` can use this JWT to grant access to other services
+
+## `X-Ray daemon` vs `X-Ray SDK` vs `X-Ray Agent`
+  - `X-Ray SDK` is to put segments in API requests
+  - `X-Ray Daemon` is to send data back to `X-Ray` API for visualization
+  - `X-Ray Agent` is a standalone Java app which auto instrument the code with minimum effort, it can also assump role to send data to a centralize account for management
+  - When deploying to EC2 or on-premises, install `X-Ray daemon` and instrument the code, no need to install on `ECS` and `Beanstalk`
+
+## `Cognito User Pool` customize logo
+  - Create a login page in `Cognito User Pool`
+  - Customize the logo there
+  - No need to create a custom login page
+
+## Parallel different functions in `Step Function`?
+  - Use `Map state`
+  - `Parallel state` can also do parallel but all functions have to have the same input while `Map` can also parallel but not does not have to take the same input
+
+## Can scale Redis by simply adding read replicas, no need to do cluster
+
+## Push notification about new update between mobile devices?
+  - Use `push synchronization` with appropriate `IAM Role`
+  - This is a feature by Cognito using SNS to inform users about new data.
+
+## How to order SQS?
+  - Configure each sender to have a unique `MessageGroupID`, this would help order all messages from a sender
+  - Do not configure each message with a `MessageGroupID`
+
+## Centralize `Lambda functions` from multiple accounts?
+  - `Lambda functions` from multi accounts can subscribe to 1 `SNS` topic, the topic will invoke functions
+  - Cannot use `SQS` because `SQS` does not invoke `Lambda functions`
+
+## CodeDeploy hooks useages?
+  - `DownloadBundle` and `Install`: agent doing stuff, users can't do anything
+  - `AfterInstall`: can configure app or change file permissions
+  - `ApplicationStart`: can restart services that were stopped during `ApplicationStop`
+  - `ValidateService`: can verify 
+
+## Config lifecycle policy of `Beanstalk` to a limited number of version but zip files in `S3` still deleted anyway?
+  - In `Beanstalk` console => `Application version lifecycle settings` => `Retention` => select not to delete the bundle when the app version is deleted
+
+## Redirect objects in S3 to another URL?
+  - It's possible to redirect an `S3` object to another object or URL by setting redirect location in the metadata of the object
+  - No need to use `Route53` to route `S3` objects
+
