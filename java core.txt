@@ -3,14 +3,13 @@
     - Java 8 features
     - Stream
     - Functional programming
-    - How to throw Exception in Lambda expression
     - Collection API
     - Multi thread maybe
 
 - Spring Boot
     - Spring
     - Spring Boot
-    - Model
+    - Model: JPA Annotation, relationships
     - Controller
     - Annotations
     - How to acces data using JPA, Hibernate
@@ -93,4 +92,8 @@ Classes in Set
   - Sorted 
   - Stored in a self-balancing tree so requires objects to have implemetations of `Comparible` or `Comparator`
   - Not synchronized
-  - Insertion and `contains()` always take O(n) time
+  - Insertion and `contains()` always take O(log(n)) time
+
+Classes in Queue
+- `PriorityQueue`: head of the queue is the smallest element, elements with highest priority processed first, ordered in natural ordering
+- Other queue: FIFO

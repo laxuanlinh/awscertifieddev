@@ -90,7 +90,7 @@
   - An `IAM Role` usually contains `identity-based` prolicies and `trust policies`
   - `ACL` is a service to control which principals from another account can access resources, cannot control within the same account
   - `Permission boundary` is to set maximum permission an identity-based policy can grant to an IAM entity
-  - `Organization SCP` is to set maximum permissions to an `Organization Unit`
+  - `Organization SCP (service control policies)` is to set maximum permissions to an `Organization Unit`
 ## `CloudFront` Key Pair has to be created by root user
 
 ## `Beanstalk` vs CodeDeploy
@@ -524,3 +524,49 @@
 
 ## The provisioned write capacity for each GSI must be equal or greater than the base table, otherwise throttling can occur
 
+## To assume role in crossed account using assume command, need to config the access key, secret and token in the environment variables
+
+## Services that manage users and allow to change password?
+  - `Cognito User Pool` and `Cognito Identity Pool`
+
+## Ordering in `Kinesis Data Stream`?
+  - FIFO if processing 1 shard
+  - Not guarantee if processing multi shards in parallel
+
+## How to trigger `CodeDeploy` when the application is upgraded?
+  - Update the version of the app in `appspec.yml` to the latest
+  - Can use env variables so that it can do it automatically, not sure why the question does this manually, not the best practice
+
+## How DB from Account B allows access for app from Account B?
+  - Create role in Account A that allows the DB and add Account B as a trusted entity
+  - In Account B allow the `EC2` `IAM` role to assume the DB access role with prefined SCP
+  - Include `AssumeRole` API in the app so the app can assume the role
+
+## To config web hosted on S3 to have HTTPS endpoints
+  - Create `CloudFront` distribution and add S3 as an origin
+  - Configure `CloudFront` with SSL/TLS cert
+  - CANNOT config ELB and S3
+
+## `Kinesis Data Stream` vs `SNS`+`SQS`
+  - `Kinesis Data Stream `is recommended when the requirement is multi apps consume same stream concurrently
+  - `SQS` when messaging semantics, visibility timeout, message delay, dynamically increase throughput at read time, scale transparently
+
+## Move stateful web app to AWS 
+  - Store session data in `DynamoDB`
+  - Use `ELB` and `CloudFront`
+
+## In case of failure, `CodePipeline` can send notification to `CloudWatch Event`
+
+## To include `Input` in the `Output` of `Step Functions`?
+  - Use `ResultPath` in `Catch` statement to include error with input
+
+## Choosing the polling timeout 
+  - If `short polling` for 10s, if the message comes at 15s then the message can only be consumed by the next polling which is at 20s
+  - IF `long polling` for 20s and the message comes at 15s, the message is consumed at 15s and connection closed, thus faster than `short polling` for 10s
+
+## Execute large number of `CLI` commands => use pagination
+
+## Route `API Gateway` based on action key in the JSON request?
+  - If the request contains action key like: `get`, `create`, `update`, `API Gateway` can route based on this key by setting the value of route selection to `$request.body.action`
+
+## `Lambda` functions of `Lambda@Edge` can only be in `US East Region`
