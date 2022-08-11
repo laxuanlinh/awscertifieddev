@@ -593,8 +593,8 @@
 ## `X-Ray daemon` vs `X-Ray SDK` vs `X-Ray Agent`
   - `X-Ray SDK` is to put segments in API requests
   - `X-Ray Daemon` is to send data back to `X-Ray` API for visualization
-  - `X-Ray Agent` is a standalone Java app which auto instrument the code with minimum effort, it can also assump role to send data to a centralize account for management
-  - When deploying to EC2 or on-premises, install `X-Ray daemon` and instrument the code, no need to install on `ECS` and `Beanstalk`
+  - `X-Ray Agent` is a standalone Java app which auto instrument the code with minimum effort, it can also assume role to send data to a centralize account for management
+  - When deploying to EC2 or on-premises, install `X-Ray daemon/agent` and instrument the code, no need to install on `ECS` and `Beanstalk`
 
 ## `Cognito User Pool` customize logo
   - Create a login page in `Cognito User Pool`
@@ -631,3 +631,28 @@
 ## Redirect objects in S3 to another URL?
   - It's possible to redirect an `S3` object to another object or URL by setting redirect location in the metadata of the object
   - No need to use `Route53` to route `S3` objects
+
+## When successful, `Lambda` authorizer should return:
+  - Primary identity
+  - Policy document with desired permissions
+
+## `Context objects` in `Lambda` functions provide the info about the functions including name, version and unique identifier
+
+## `Kinesis Data Stream` with `Lambda` when fails?
+  - When an event fails Lambda will retry the entire batch of a shard over and over again unti it succeeds or the event expires in the source mapping
+  - This may lead to duplicates in transactions
+
+## What are `service-linked roles`?
+  - They are special roles that link to an AWS service and contain all permissions required to call this service
+  - Sometimes we don't need to create a `service-linked role`, the service can create that role for us automatically
+
+## Grant access for `CloudFormation` to access `Lambda` code in `S3` in the most secure way?
+  - Grant permission List and GetPermission for `CloudFormation` execution role
+  - Add a bucket policy to `S3` to allow the principal 
+  - Do not grant access for principal *
+  - Use a service-linked role is not a good idea either because it contains too many permissions
+
+## CloudFront enforce HTTPS?
+  - Can set `View Protocol Policy` to `Redirect HTTP to HTTPS` and need to change `Origin Protocol Policy` to `Match Viewer`
+  - Or in `View Protocol Policy` can select `HTTPS Only`
+  - Install SSL cert in ALB
