@@ -35,11 +35,12 @@
   - There is no such thing as `Audit Trail` in `SSM`, `SSM` can only be audited by `CloudTrail`
 ## `SQS` max messagge size
   - Max is 256KB
+  - Can use `SQS Extended Client Library` to extend to 2GB
 ## What is `Organization Trail`? Does `CloudTrail` track only at bucket level? Access to `Organization Trail`
   - If we create an organization in `AWS Organizations` then we can have `Organization Trail` to track all accounts in it
   - `CloudTrail` can only track at bucket level by default, need to enable `S3 Event Stream` to trail object activities
   - Members can only see `Organization Trail` but cannot modify/delete or see trail log in `S3`
-## What is the strategy that involves `ASG` to deploy applications to EC2?
+## What is the strategy that involves `ASG` to deploy applications to `EC2`?
   - To use `Blue/Green`, must use ALB so that ASGs of 2 versions can connect to the ALB
   - `In-place deployment` means deploy to existing EC2 instances, each instance is stopped then the new version is deployed and validated
 ## Where condition is used in `CloudFormation` template?
@@ -117,7 +118,7 @@
   - `Dedicated Instance` is on a hardware dedicated to a single customer, isolated from `Dedicated Instance` s of other AWS account but can still shares with other instances of the same account
   - `Dedicated Host` is a physical dedicated server, allows running `license softwares` that bound to hardware, visibility to `sockets` and `physical cores`, more expensive than `Dedicated Instance`
 
-## `Immutable`  and Traffic splitting deployment can cause burst balance lost due to the instances are replaced in some cases
+## `Immutable`  and `Traffic splitting` deployment can cause burst balance lost due to the instances are replaced in some cases
 
 ## IAM and `ACM` on SSL certificate
   - `ACM` is used to manage SSL certificates
@@ -570,3 +571,63 @@
   - If the request contains action key like: `get`, `create`, `update`, `API Gateway` can route based on this key by setting the value of route selection to `$request.body.action`
 
 ## `Lambda` functions of `Lambda@Edge` can only be in `US East Region`
+
+## System with different components that scale separately on `Beanstalk`?
+  - Best to deploy components to different `Beanstalk` environments because each environment is optimized for a type of application.
+  - By specifying different tier for different components, `Beanstalk` can use the right capacity and scale accordingly
+
+## To set alert on `CloudWatch` using `CLI`, use `put-metric-data` command
+
+## Update application in `Beanstalk`?
+  - Zip the application and upload to `Beanstalk` console or use `CLI`
+  - No need to rebuild or build new environment
+
+## How many keys are used in `Envelop Encryption`?
+  - 2 keys, `Customer Master Key` is to encrypt/decrypt `Data key`
+  - `Data key` is to encrypt data
+
+## Which service uses JWT?
+  - After a user logs in, `Cognito User Pool` returns a JWT
+  - `Cognito Identity Pool` can use this JWT to grant access to other services
+
+## `X-Ray daemon` vs `X-Ray SDK` vs `X-Ray Agent`
+  - `X-Ray SDK` is to put segments in API requests
+  - `X-Ray Daemon` is to send data back to `X-Ray` API for visualization
+  - `X-Ray Agent` is a standalone Java app which auto instrument the code with minimum effort, it can also assump role to send data to a centralize account for management
+  - When deploying to EC2 or on-premises, install `X-Ray daemon` and instrument the code, no need to install on `ECS` and `Beanstalk`
+
+## `Cognito User Pool` customize logo
+  - Create a login page in `Cognito User Pool`
+  - Customize the logo there
+  - No need to create a custom login page
+
+## Parallel different functions in `Step Function`?
+  - Use `Map state`
+  - `Parallel state` can also do parallel but all functions have to have the same input while `Map` can also parallel but not does not have to take the same input
+
+## Can scale Redis by simply adding read replicas, no need to do cluster
+
+## Push notification about new update between mobile devices?
+  - Use `push synchronization` with appropriate `IAM Role`
+  - This is a feature by Cognito using SNS to inform users about new data.
+
+## How to order SQS?
+  - Configure each sender to have a unique `MessageGroupID`, this would help order all messages from a sender
+  - Do not configure each message with a `MessageGroupID`
+
+## Centralize `Lambda functions` from multiple accounts?
+  - `Lambda functions` from multi accounts can subscribe to 1 `SNS` topic, the topic will invoke functions
+  - Cannot use `SQS` because `SQS` does not invoke `Lambda functions`
+
+## CodeDeploy hooks useages?
+  - `DownloadBundle` and `Install`: agent doing stuff, users can't do anything
+  - `AfterInstall`: can configure app or change file permissions
+  - `ApplicationStart`: can restart services that were stopped during `ApplicationStop`
+  - `ValidateService`: can verify 
+
+## Config lifecycle policy of `Beanstalk` to a limited number of version but zip files in `S3` still deleted anyway?
+  - In `Beanstalk` console => `Application version lifecycle settings` => `Retention` => select not to delete the bundle when the app version is deleted
+
+## Redirect objects in S3 to another URL?
+  - It's possible to redirect an `S3` object to another object or URL by setting redirect location in the metadata of the object
+  - No need to use `Route53` to route `S3` objects

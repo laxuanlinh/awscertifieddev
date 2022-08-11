@@ -1,10 +1,8 @@
 - Java Core 
     - OOP
-    - Java 8 features
     - Stream
     - Functional programming
     - Collection API
-    - Multi thread maybe
 
 - Spring Boot
     - Spring
@@ -13,9 +11,13 @@
     - Controller
     - Annotations
     - How to acces data using JPA, Hibernate
+    - Build a basic REST API app using spring boot, data jpa and h2
+    - Revisit relationships in JPA, the infinite resursion issue
+    - Some basic annotations for controller, service, repository, models
+    - Connect to DB using spring data JPA
 
 - SQL
-    - Create and use index
+    - Joins and Union
     - Aggregators
 
 
