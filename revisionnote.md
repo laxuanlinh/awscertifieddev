@@ -656,3 +656,47 @@
   - Can set `View Protocol Policy` to `Redirect HTTP to HTTPS` and need to change `Origin Protocol Policy` to `Match Viewer`
   - Or in `View Protocol Policy` can select `HTTPS Only`
   - Install SSL cert in ALB
+
+## If an SQS consumer wants to concurrently process multiple messages at time:
+  - Call `ReceiveMessage` API to set `MaxNumberOfMessages` to a value greater than default 1
+
+## To pass environment variables to ECS containers, define in the `environment variable section` of `task definition`
+
+## To restrict access to `API Gateway`, use resource policies, they can also restrict against `IP addresses` and `VPC`
+
+## To allow unauthorized users to access AWS resources, create new identity pool, enable access to unauthorized users and provide tokens
+
+## To identity the delay/time of requests between services
+  - Can use `X-Ray` and analyze `subsegments`
+  - Segments can break down into `subsegments` which provide more  granular timing info and downstream calls
+
+## To create source bundle for `Beanstalk`
+  - Consist of `zip` or `war` file
+  - Must not include parent folder or top-level directory 
+  - Must not exceed 512MB
+
+## If `Lambda` function exceeds max limit concurrency, increase the quota in `Service Quotas`
+
+## To enable `Blue/Green` deplyment in `CloudFormation` templates, include a `Transform` section and a `AWS::CodeDeploy::BlueGreen` hook
+
+## It's possible to modify `CodeCommit` repos using `AWS SDK `with `put-file` command, useful when push files programmatically with `Lambda` or apps
+
+## To encrypt log groups in `CloudWatch Logs` using `KMS`, can use `CLI` with the `KMS` key ARN
+  - aws logs create-log-group --log-group-name *log group name* --kms-key-id *key arn*
+  - aws logs associate-kms-key --log-group-name *log group name* --kms-key-id *key arn*
+
+## `DynamoDB` streams can `asynchronously` trigger `Lambda` functions, the streams wait for `Lambda` to finish, if it's successful then stream is marked as a success, if not then it will retry several times
+
+## It's not possible to change `Load Balancer` type of a `Beanstalk` environment, must create a new environment with different type of `ELB`
+
+## To connect `Lambda` functions to `VPC` resources and to internet at the same time:
+  - Config `Lambda` to connect to `VPC` private subnet
+  - Add `NAT` to the `VPC` to allow access to the internet
+
+## The most secured way to access `Aurora MySQL`?
+  - Use IAM authentication to access `Aurora MySQL`, `Aurora PostgreSQL`, `MySQL`, `PostgreSQL` and `MariaDB`
+  - Does not work with `Aurora Serverless`
+
+## Before `cloudformation deploy`, need to run `cloudformation package` to package and upload the artifact to `S3`
+
+## When running `aws get erc get-login`, a token with the command to login is returned, run this command then we can login and pull images from ECR
