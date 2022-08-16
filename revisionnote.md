@@ -656,3 +656,7 @@
   - Can set `View Protocol Policy` to `Redirect HTTP to HTTPS` and need to change `Origin Protocol Policy` to `Match Viewer`
   - Or in `View Protocol Policy` can select `HTTPS Only`
   - Install SSL cert in ALB
+
+## Can import key to `DynamoDB` to do table level encryption if question about customer managed key, otherwise can use `KMS` with `CMK`
+
+## Use `aws sts assume-role` to verify role permissions
