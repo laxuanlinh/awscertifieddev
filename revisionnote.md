@@ -59,7 +59,7 @@
   - When terminate a `STOPPED` EC2 container instance, the instance is not deregistered from the cluster, need to manually deregister to remove
   - When terminate a `RUNNING` EC2 container instance, the instance is automatically removed from the ECS cluster
 
-## `Cognito Use Pools` for `ALB` and `CloudFront`
+## `Cognito User Pools` for `ALB` and `CloudFront`
   - `Cognito User Pools` can authenticate requests for `ALB` and `API Gateway` but not `CloudFront` and `Classic Load Balancer`
   - To use `Cognito User Pools` at `CloudFront`, need to use `Lambda@Edge`
 
@@ -71,7 +71,7 @@
 
 ## To improve `Lambda` performance, increase the RAM, increase timeout can help with long running tasks but not necessarily improve the performance
 
-## `Lambda` Authorizer vs Cognito User Pools
+## `Lambda Authorizer` vs `Cognito User Pools`
   - Third party authentication => `Lambda` authorizer because it processes bearer token from OAuth or SAML
   - Cognito uses user db managed by AWS so it's not third party
 
