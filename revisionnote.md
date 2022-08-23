@@ -208,8 +208,7 @@
   - `Resource-based policy`: allows or denies AWS accounts or IP addresses that can invoke APIs
   - `IAM roles and policies`: allows which principals and execution units can create, deploy, manage and call APIs, can use with `IAM tags`
   - `Lambda Authorizer` and `Cognito User Pools`
-  - `Endpoints policies for interface VPC endpoints`: attach resource-based policies to interface VPC endpoints to improve security of private APIs
-
+  - `VPC Endpoint Policies`: for private APIs, can use VPC endpoint policies to improve security
 ## KMS Encryption using `Lambda`
   - To encrypt data larger than 4KB, `Lambda` needs to use `Envelop Encryption` and store the encrypted data as a file because the max size of env variable in `Lambda` is 4KB (probably to use KMS' Encrypt API)
 
@@ -232,7 +231,7 @@
 
 ## API Gateway HTTP
   - HTTP is for `Lambda` and other services of AWS like HTTP endpoints of applications
-  - `API Gateway` uses `Lambda Authorizer`, `Cognito` and `IAM policies` but not `AWS WAF`
+  - `API Gateway` HTTP endpoint type uses `Lambda Authorizer`, `Cognito` and `IAM policies` but not `AWS WAF`
 
 ## Firehose vs Data Stream
   - `Firehose` is to load data stream to other AWS services like `Redshift`, `S3`, `ElasticSearch`, it's fully managed and cheaper
@@ -265,7 +264,7 @@
 
 ## State Machine and Activities in `Step Function`
   - `State Machine` is a JSON file to orchestra tasks
-  - `Activity` is a feature that allows tasks in a S`tate Machine` to have work done somewhere else like `EC2` instances
+  - `Activity` is a feature that allows tasks in a `State Machine` to have work done somewhere else like `EC2` instances
 
 ## `CodeDeploy` Agent usage
   - Allows `EC2` instances to be used by `CodeDeploy`
@@ -438,7 +437,7 @@
 ## How to securely transfer data between EC2 and EBS?
   - Enable EBS encryption
   - Use IAM role to limit access
-  - **Creating encrypted EBS volume is useful to move between AZs but has nothing to do with transfer data between EC2 and EBS, don't select this**
+  - **Creating encrypted EBS snapshots is useful to move between AZs but has nothing to do with transfer data between EC2 and EBS, don't select this**
 
 ## How to define a `Beanstalk` multi container Docker environment?
   - A `Beanstalk multi container Docker env` requires a `Dockerrun.aws.json` file, which is an `ECS Task Definition` file even though `ECS` has nothingg to do with it
