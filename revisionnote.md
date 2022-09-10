@@ -704,3 +704,29 @@
 
 ## When running `aws get erc get-login`, a token with the command to login is returned, run this command then we can login and pull images from ECR
 
+## Serving content from `S3` through `CloudFront` but need to change region of `S3`?
+- Use `Lamdba@Edge` to change the request origin from `CloudFront` to `S3`
+
+## CloudFront can only use `ACM` cert created in `us-east-1` region
+
+## To deliver logs and detect anomolies from `CloudFront` in the shortest interval possible?
+- Enable `CloudFront` `real-time` log and stream it to `Kinesis Data Stream`
+- Stream the data from `Kinesis` to `AWS OpenSearch` (`AWS ElasticSearch`) and create a dashboard for it (Kibana)
+
+## Deploy Docker images to `Beanstalk`
+- If it's code then we need to have a `Dockerfile` and `Beanstalk` will build the image and container following the instructions inside the `Dockerfile`
+- If the image is already built and pushed to a remote registry then use `docker-compose.yml` to pull it.
+
+## `CodeDeploy` increment 10% 
+- `Linear10PercentEvery1Minute`: increment 10% every 10 minute
+- `Canary10Percent5Minutes`: initially increment 10% then 5 mins later deploy the rest
+
+## Lambda writes transactions to RDS in the most cost effective way?
+- Publish transactions to `SQS` queue, let it invoke `Lambda` function.
+- Set the reserved concurrency to lower then the number of RDS connections for stability
+- There is no such thing as `Lambda` enhanced fanout, that's for `Kinesis`
+
+## Fastest way to create a policy with all required permissions?
+- Base on all events recorded by `CloudTrail` in the last 3 months
+- If it's more than 3 months then must use Athena to query `S3` because the retention time of `CloudTrail` is 90 days
+
