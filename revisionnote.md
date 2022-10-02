@@ -1,6 +1,6 @@
 ## What is `SWF`?
   - It's a service to coordiate between multiple components, it ensures each task is only assigned once, the states of tasks are stored in SWF so the components don't have to care about it
-## `CloudFormation` launches `ASG` and `ECS` clusters
+## What need to do when `CloudFormation` launches `ASG` and `ECS` clusters
   - Need to specify name of the cluster in `etc/ecs/ecs.config` file to launch the ECS cluster
 ## `S3` bucket policy, `IAM role` for cross account access?
   - Resource based policy nad IAM role can only be shared between accounts within the same partition, not cross partitions. Ex: `S3` bucket policies in `us-east` cannot be used in `ap-southeast`
@@ -11,18 +11,18 @@
 ## `CodeDeploy Agent`, `Deployment Group`
   - `CodeDeploy Agent` is a software running on EC2 that allows it to be targeted by `CodeDeploy`
   - `Deployment Group` is a set of tagged EC2 instances, the group contains of some settings to be reused
-## `AWS CLI CodeBuild` encryption
+## How to do `AWS CLI CodeBuild` encryption
   - To encrypt a CodeBuild build using CLI, specify the param `CODEBUILD_KMS_KEY_ID` in the build command
-## `DynamoDB` latency
+## How to improve `DynamoDB` latency
   - DynamoDB global tables allow distribute replicas across regions that reduces latency
   - Eventually consistent read has less latency than strongly consistent read
   - Aside from that using DAX and reusing connection also help
-## `CloudFormation` template `Outputs` section?
+## Where to export resources in `CloudFormation` template `Outputs` section?
   - To export a resource, need to use `Export` field in `Outputs` section to specify the name of the resource
 ## Serverless app containers that share memory
   - Define multi containers in a task definition if we want these containers to share resources, lifecycle, data volume and can reference ports
   - If it's serverless then use Fargate, don't use EC2
-## `Lambda` `Blue/Green` deployment:
+## How to do `Lambda` `Blue/Green` deployment:
   - One alias can point to 2 versions and assign weight to each version, it can rollback easily.
   - Don't use 2 aliases for 2 versions
 ## `ALB` and `SSL` - high CPU utilization
@@ -33,7 +33,7 @@
   - Writing to database then invalidating the cache is also a way to keep the cache up to date with database
 ## What is `Audit Trail` in `SSM`?
   - There is no such thing as `Audit Trail` in `SSM`, `SSM` can only be audited by `CloudTrail`
-## `SQS` max messagge size
+## How to increase `SQS` max messagge size
   - Max is 256KB
   - Can use `SQS Extended Client Library` to extend to 2GB
 ## What is `Organization Trail`? Does `CloudTrail` track only at bucket level? Access to `Organization Trail`
@@ -43,7 +43,7 @@
 ## What is the strategy that involves `ASG` to deploy applications to `EC2`?
   - To use `Blue/Green`, must use ALB so that ASGs of 2 versions can connect to the ALB
   - `In-place deployment` means deploy to existing EC2 instances, each instance is stopped then the new version is deployed and validated
-## Where condition is used in `CloudFormation` template?
+## Where conditions are used in `CloudFormation` template?
   - Conditions can be used in `Resources`, `Outputs`
   - Cannot be used in `Parameters`
 ## Input parameters in reuseable `CloudFormation` templates:
@@ -94,7 +94,7 @@
   - `Organization SCP (service control policies)` is to set maximum permissions to an `Organization Unit`
 ## `CloudFront` Key Pair has to be created by root user
 
-## `Beanstalk` vs CodeDeploy
+## `Beanstalk` vs `CodeDeploy`
   - `Beanstalk` can do in place deploy, it can do Blue Green but have to create a new environment and switch manually, `Beanstalk` also does not give much control over the deployment either
   - `CodeDeploy` can do Blue Green better, give much more control over the deployment
 ## What is `Access Advisor`?
@@ -580,6 +580,7 @@
 ## Update application in `Beanstalk`?
   - Zip the application and upload to `Beanstalk` console or use `CLI`
   - No need to rebuild or build new environment
+  - `Beanstalk` does not work with `.tar` file
 
 ## How many keys are used in `Envelop Encryption`?
   - 2 keys, `Customer Master Key` is to encrypt/decrypt `Data key`
@@ -729,4 +730,62 @@
 ## Fastest way to create a policy with all required permissions?
 - Base on all events recorded by `CloudTrail` in the last 3 months
 - If it's more than 3 months then must use Athena to query `S3` because the retention time of `CloudTrail` is 90 days
+
+## Retry inserting data to DynamoDB on exceptions?
+- The `AWS SDK `auto retries on exception
+- Can use with boto3 for Python3 to call `PutItem` operation
+
+## How to get Lambda info about the event and the invocation?
+- Lambda functions pass a context object to the handler that contains info about the event, invocation ...
+- Use this object to log info to the console
+
+## In order for DynamoDB to trigger a Lambda function, `Event Source Mapping` has to be configured
+
+## When create a new key for users in Gateway API, need to call createUsagePlan API to associatet the new key with the API, only need to redeploy the API if the specs change
+
+## To speed up start up time for Lambda functions
+- Can include only needed dependencies
+- Increase memory to increase CPU and speed up the start up time.
+
+## For `Step function` to wait for third party service to validate something, use `.waitForTaskToken` and pass the token in the body
+
+## Reduce number of unauthenticated requests to API via `CloudFront`?
+- Create a `Lambda` function in `CloudFront`
+- Use `crypto` module to validate the authorization header to prevent invalid ones from reaching the API
+
+## To set up async backend `Lambda` functions 
+- If we have an `API Gateway` with `Lambda` as backend and we want to send response while the processing is still going on, we need to make the `Lambda` async
+- To do this, set the header `X-Amz-Invocation-Type` to static value `Event` in the Integration requests
+
+## CodeBuild only pushes Docker image to ECR after the build is successful?
+- Use the `post_build` block, use the `command` block
+- The `finally` block executes even when commands in command block fail
+
+## `Beanstalk` deployment without affecting availability?
+- `Rolling based on Health` and `Immutable`
+- `Beanstalk` does not have `Canary`
+
+## It's possible to copy `EC2 AMI` from 1 region to another to deploy in `CloudFormation` template
+
+## `Lambda` function call `TranslateText` API and use `DynamoDB` but the database is overloaded?
+- Store the result in `/tmp` directory
+- `TranslateText` API does not have caching
+- There is no such thing as `Lambda` parallel processing
+- Cannot make this async because users still need to see the response and also this does not resolve overloaded database.
+
+## To reference to parameters in `Secrets Manager` in `CloudFormation` template, use `AWS::secretsmanager`
+
+## To increase the number of messages of SQS an application can receive at a time, call `ReceiveMessage` API to set `MaxNumberOfMessages` to greater than default 1
+
+## `Firehose` can transform data using `Lambda` functions without going through `Data Stream`
+
+## `Cognito User Pool` can block or force MFA on suspcious login with `Adaptive Authentication`
+
+## If accidentally delete CMK key material, can reimport it.
+
+## To launch new EC2 instance using AWS CLI?
+- `aws ec2 start-instances `
+
+
+
 
