@@ -94,10 +94,10 @@
   - `Organization SCP (service control policies)` is to set maximum permissions to an `Organization Unit`
 ## `CloudFront` Key Pair has to be created by root user
 
-## `Beanstalk` vs `CodeDeploy`
+## `Beanstalk` vs `CodeDeploy` Blue/Green deployment
   - `Beanstalk` can do in place deploy, it can do Blue Green but have to create a new environment and switch manually, `Beanstalk` also does not give much control over the deployment either
   - `CodeDeploy` can do Blue Green better, give much more control over the deployment
-## What is `Access Advisor`?
+## What is `Access Advisor`, `Trusted Advisor`, `Access Analyzer`?
   - It's to help audit service access, remove unnecessary permissions
   - `Trusted Advisor` is to advise you to follow best practices
   - `Amazon Inspector` auto detect security issues of the applications
@@ -152,7 +152,7 @@
 ## What is Firehose sink type?
   - `Firehose` can support streaming data to services like `Redshift`, `S3`, `Splunk`, `Amazon Elastic Search` but cannot stream to `ElastiCache`
 
-## CodeBuild log
+## `CodeBuild` log vs `CloudTrail`
   - By default `CodeBuild` logs about status of builds, this log is in `CloudWatch Logs`, if integrated with `S3` then the log can be moved to `S3` and later analyzed by `Anthena`
   - `CloudTrail` can also integrate with `CodeBuild` but it only records the action and API from users, not the statuses of builds
 
@@ -189,7 +189,7 @@
   - For `gp2` SSD, more volume = more IOPS, IOPS increase linearly from 0 -> 5,334GB (16.000IOPS), after that, larger volume is capped at 16.000 IOPS, cannot go higher
   - For `io1`, the provisioned max throughput ratio to volume size is 50:1, which means 50GB has a max IOPS 50*50=2500IOPS, 200GB = 10000IOPS, no cap
 
-## `CloudFront` signed URL
+## `CloudFront` signed URL vs signed cookies? Public key vs private key?
   - CF uses `Signed URL` to control who can access the content with expiration, it can only manage access of `a single file`
   - `Signed Cookies` can also control access but for `multiple files`.
   - `Signed URL` is more specific and takes prededence over `Signed Cookies`
@@ -286,14 +286,14 @@
 ## Kinesis Agent vs Kinesis Producer Library
   - Both Agent and KPL are to send data to Data Stream but Kinesis Agent is better
 
-## CloudTrail `S3` cross-account
+## Can the owner of `S3` bucket receive `CloudTrail` log about the bucket?
   - The owner of a bucket can only receive `CloudTrail` access log if he is also the owner of the object
 
-## DynamoDB scan large table
+## What is recommended when scan large `DynamoDB` table?
   - It's recommended to use `Parallel Scan` when query a large table.
   - `Filter Expression` does not help speed this up because it only filters after the `Scan` is complete
 
-## CodePipeline automation?
+## How to make `CodePipeline` aware of the changes in `CodeCommit`
   - When create source of `CodePipeline` in console, `CodePipeline` automatically creates a `CW Event` to watch for code changes in `CodeCommit` or `S3`
 
 ## Enable KMS encryption in requests to `S3`
@@ -324,7 +324,7 @@
   - Elastic IP is a reserved public IP
   - If we run a DNS server on an EC2, we need a public IP
 
-## What is CodeStar?
+## What is `CodeStar`?
   - It's a service that group all CI/CD services together
   - Can provide a CI/CD pipeline from start to finish in a few mins and provides a monitor dashboard
 
