@@ -557,7 +557,7 @@
   - `Kinesis Data Stream `is recommended when the requirement is multi apps consume same stream concurrently
   - `SQS` when messaging semantics, visibility timeout, message delay, dynamically increase throughput at read time, scale transparently
 
-## Move stateful web app to AWS 
+## Move stateful web app to AWS, where to store session data and what other services to scale and cache?
   - Store session data in `DynamoDB`
   - Use `ELB` and `CloudFront`
 
@@ -570,22 +570,24 @@
   - If `short polling` for 10s, if the message comes at 15s then the message can only be consumed by the next polling which is at 20s
   - IF `long polling` for 20s and the message comes at 15s, the message is consumed at 15s and connection closed, thus faster than `short polling` for 10s
 
-## Execute large number of `CLI` commands => use pagination
+## Best practices when CLI commands return large results => use pagination
 
 ## Route `API Gateway` based on action key in the JSON request?
   - If the request contains action key like: `get`, `create`, `update`, `API Gateway` can route based on this key by setting the value of route selection to `$request.body.action`
+  - For example, we can use `$request.body.action` to route the `{action: "sendmessage", message: "message"}` to sendmessage backend, and the request `{action: "joinroom", room: "roomid"}` to joinroom backend.
 
 ## `Lambda` functions of `Lambda@Edge` can only be in `US East Region`
 
-## System with different components that scale separately on `Beanstalk`?
+## Best practices to deploy different components which scale separately to `Beanstalk`?
   - Best to deploy components to different `Beanstalk` environments because each environment is optimized for a type of application.
   - By specifying different tier for different components, `Beanstalk` can use the right capacity and scale accordingly
 
-## To set alert on `CloudWatch` using `CLI`, use `put-metric-data` command
+## How to set alerts on `CloudWatch` using `CLI`?
+  - Use `put-metric-data` command
 
-## Update application in `Beanstalk`?
+## How to update `Beanstalk` applications? Do we need to build new environments?
   - Zip the application and upload to `Beanstalk` console or use `CLI`
-  - No need to rebuild or build new environment
+  - No need to rebuild or build new environments
   - `Beanstalk` does not work with `.tar` file
 
 ## How many keys are used in `Envelop Encryption`?
@@ -611,7 +613,7 @@
   - Use `Map state`
   - `Parallel state` can also do parallel but all functions have to have the same input while `Map` can also parallel but not does not have to take the same input
 
-## Can scale Redis by simply adding read replicas, no need to do cluster
+## Can scale Redis by simply adding read replica nodes to the cluster, no need to enable cluster mode
 
 ## Push notification about new update between mobile devices?
   - Use `push synchronization` with appropriate `IAM Role`
@@ -619,13 +621,13 @@
 
 ## How to order SQS?
   - Configure each sender to have a unique `MessageGroupID`, this would help order all messages from a sender
-  - Do not configure each message with a `MessageGroupID`
+  - Do not configure each message with a different `MessageGroupID`
 
-## Centralize `Lambda functions` from multiple accounts?
+## How Lambda functions from multiple accounts can process data from 1 centralized source?
   - `Lambda functions` from multi accounts can subscribe to 1 `SNS` topic, the topic will invoke functions
   - Cannot use `SQS` because `SQS` does not invoke `Lambda functions`
 
-## CodeDeploy hooks useages?
+## CodeDeploy hooks usages?
   - `DownloadBundle` and `Install`: agent doing stuff, users can't do anything
   - `AfterInstall`: can configure app or change file permissions
   - `ApplicationStart`: can restart services that were stopped during `ApplicationStop`
@@ -638,9 +640,10 @@
   - It's possible to redirect an `S3` object to another object or URL by setting redirect location in the metadata of the object
   - No need to use `Route53` to route `S3` objects
 
-## When successful, `Lambda` authorizer should return:
-  - Primary identity
-  - Policy document with desired permissions
+## When successful, what does `Lambda` authorizer return?
+  - It should return a dictionary-like JSON object that contains:
+    - Principl identifier
+    - Policy statements aka permissions
 
 ## `Context objects` in `Lambda` functions provide the info about the functions including name, version and unique identifier
 
@@ -663,29 +666,38 @@
   - Or in `View Protocol Policy` can select `HTTPS Only`
   - Install SSL cert in ALB
 
-## Can import key to `DynamoDB` to do table level encryption if question about customer managed key, otherwise can use `KMS` with `CMK`
+## DynamoDB encryption at rest options?
+  - Default encryption, key managed by DynamoDB
+  - KMS encryption
+  - Custom key owned by customer but charged for KMS (CMK)
 
 ## Use `aws sts assume-role` to verify role permissions
 
 ## If an SQS consumer wants to concurrently process multiple messages at time:
-  - Call `ReceiveMessage` API to set `MaxNumberOfMessages` to a value greater than default 1
+  - Call `ReceiveMessage` API to set `MaxNumberOfMessages` to a value greater than default 1, max is 10
 
 ## To pass environment variables to ECS containers, define in the `environment variable section` of `task definition`
 
-## To restrict access to `API Gateway`, use resource policies, they can also restrict against `IP addresses` and `VPC`
+## How to restrict access to `API Gateway`?
+  - Use resource policies, they can restrict against `IP addresses`, `VPC` and IAM principles
 
-## To allow unauthorized users to access AWS resources, create new identity pool, enable access to unauthorized users and provide tokens
+## How to allow unauthorized users to access AWS resources? 
+  - Create new identity pool, enable access to unauthorized users and provide tokens
 
-## To identity the delay/time of requests between services
+## To identify the delay/time of requests between services
   - Can use `X-Ray` and analyze `subsegments`
-  - Segments can break down into `subsegments` which provide more  granular timing info and downstream calls
+  - Segments can break down into `subsegments` which provide more granular timing info and downstream calls
 
-## To create source bundle for `Beanstalk`
-  - Consist of `zip` or `war` file
-  - Must not include parent folder or top-level directory 
-  - Must not exceed 512MB
+## What is source bundle for `Beanstalk`
+  - When creating or updating applications in Beanstalk, we need to bundle the source code and deploy it to Beanstalk, that's called `source bundle`, the source bundle needs to satify the following criterias:
+    - Consist of `zip` or `war` file
+    - Must not include parent folder or top-level directory 
+    - Must not exceed 512MB
 
-## If `Lambda` function exceeds max limit concurrency, increase the quota in `Service Quotas`
+## If `Lambda` function exceeds max limit concurrency?
+  - Set reserved concurrency for each function so they don't throttle the others
+  - AWS can increase automatically but we can manually increase the limit concurrency from default 1000 to tens of thousands.
+  - If the increase amount is too large then we need to raise a request to AWS Support
 
 ## To enable `Blue/Green` deplyment in `CloudFormation` templates, include a `Transform` section and a `AWS::CodeDeploy::BlueGreen` hook
 
