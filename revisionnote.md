@@ -701,18 +701,22 @@
 
 ## To enable `Blue/Green` deplyment in `CloudFormation` templates, include a `Transform` section and a `AWS::CodeDeploy::BlueGreen` hook
 
-## It's possible to modify `CodeCommit` repos using `AWS SDK `with `put-file` command, useful when push files programmatically with `Lambda` or apps
+## How to push files programmatically to CodeCommit using AWS SDK?
+  - Use `PutFile` 
 
 ## To encrypt log groups in `CloudWatch Logs` using `KMS`, can use `CLI` with the `KMS` key ARN
   - aws logs create-log-group --log-group-name *log group name* --kms-key-id *key arn*
   - aws logs associate-kms-key --log-group-name *log group name* --kms-key-id *key arn*
 
-## `DynamoDB` streams can `asynchronously` trigger `Lambda` functions, the streams wait for `Lambda` to finish, if it's successful then stream is marked as a success, if not then it will retry several times
+## How DynamoDB stream trigger Lambda functions?
+  - When enabled Lambda integration, AWS Lambda polls from DynamoDB streams and invokes Lambda functions synchronoulsy.
+  - If fails, it will retry several times.
 
-## It's not possible to change `Load Balancer` type of a `Beanstalk` environment, must create a new environment with different type of `ELB`
+## Is it possible to change the Load Balancer type of a Beanstalk environment?
+  - It's not possible to change `Load Balancer` type of a `Beanstalk` environment, must create a new environment with different type of `ELB`
 
 ## To connect `Lambda` functions to `VPC` resources and to internet at the same time:
-  - Config `Lambda` to connect to `VPC` private subnet
+  - Config `Lambda` to connect to `VPC` in the console.
   - Add `NAT` to the `VPC` to allow access to the internet
 
 ## The most secured way to access `Aurora MySQL`?
@@ -721,9 +725,9 @@
 
 ## Before `cloudformation deploy`, need to run `cloudformation package` to package and upload the artifact to `S3`
 
-## When running `aws get erc get-login`, a token with the command to login is returned, run this command then we can login and pull images from ECR
+## When running `aws get erc get-login-password`, a token with the command to login is returned, run this command then we can login and pull images from ECR
 
-## Serving content from `S3` through `CloudFront` but need to change region of `S3`?
+## Serving content from `S3` through `CloudFront` but need to switch region of S3
 - Use `Lamdba@Edge` to change the request origin from `CloudFront` to `S3`
 
 ## CloudFront can only use `ACM` cert created in `us-east-1` region
@@ -742,7 +746,7 @@
 
 ## Lambda writes transactions to RDS in the most cost effective way?
 - Publish transactions to `SQS` queue, let it invoke `Lambda` function.
-- Set the reserved concurrency to lower then the number of RDS connections for stability
+- Set the reserved concurrency to lower than the number of RDS connections for stability
 - There is no such thing as `Lambda` enhanced fanout, that's for `Kinesis`
 
 ## Fastest way to create a policy with all required permissions?
@@ -759,7 +763,7 @@
 
 ## In order for DynamoDB to trigger a Lambda function, `Event Source Mapping` has to be configured
 
-## When create a new key for users in Gateway API, need to call createUsagePlan API to associatet the new key with the API, only need to redeploy the API if the specs change
+## When create a new key for users in Gateway API, need to call `createUsagePlan` API to associate the new key with the API, only need to redeploy the API if the specs change
 
 ## To speed up start up time for Lambda functions
 - Can include only needed dependencies
@@ -771,17 +775,17 @@
 - Create a `Lambda` function in `CloudFront`
 - Use `crypto` module to validate the authorization header to prevent invalid ones from reaching the API
 
-## To set up async backend `Lambda` functions 
+## How to config `API Gateway` with `Lambda function` backend asynchronous?
 - If we have an `API Gateway` with `Lambda` as backend and we want to send response while the processing is still going on, we need to make the `Lambda` async
 - To do this, set the header `X-Amz-Invocation-Type` to static value `Event` in the Integration requests
 
-## CodeBuild only pushes Docker image to ECR after the build is successful?
-- Use the `post_build` block, use the `command` block
-- The `finally` block executes even when commands in command block fail
+## How to make `CodeBuild` push the Docker image to ECR only after the build is successful?
+- Use the `commands` block in `post_build` block
+- Don't use the `finally` block because it executes even when commands in `command` block fail
 
-## `Beanstalk` deployment without affecting availability?
+## `Beanstalk` update environment configuration without affecting availability?
 - `Rolling based on Health` and `Immutable`
-- `Beanstalk` does not have `Canary`
+- There is no `Canary` when rolling update in `Beanstalk` environments
 
 ## It's possible to copy `EC2 AMI` from 1 region to another to deploy in `CloudFormation` template
 
@@ -802,7 +806,7 @@
 ## If accidentally delete CMK key material, can reimport it.
 
 ## To launch new EC2 instance using AWS CLI?
-- `aws ec2 start-instances `
+- `aws ec2 run-instances `
 
 
 
